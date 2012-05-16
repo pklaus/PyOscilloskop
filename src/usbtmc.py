@@ -1,6 +1,7 @@
 # pyOscilloskop
 #
 # Copyright (19.2.2011) Sascha Brinkmann
+#           (2012) Philipp Klaus
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
