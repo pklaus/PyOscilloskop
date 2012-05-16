@@ -17,33 +17,64 @@
 
 import usbtmc
 import time
+import re
 
 # The class RigolFunctionGenerator is able to control the
 # function generator Rigol DG1022. Read more on
 # http://blog.philippklaus.de/2012/05/rigol-dg1022-arbitrary-waveform-function-generator/
 
 DG1022_SLEEP_AFTER_WRITE = 0.01
+VALID_RESPONSES = {
+  '*IDN?' : {
+    'full': r'(?P<manufacturer>[a-zA-Z0-9 ]+),(?P<model>[a-zA-Z0-9 ]+),(?P<serial>[A-Z0-9]+),(),(?P<edition>[0-9\.]+)',
+    'groups' : {
+      'manufacturer' : 'RIGOL TECHNOLOGIES',
+      'model' : 'DG1022 '
+    }
+  },
+  '*IDN?____' : r'(RIGOL TECHNOLOGIES),(DG1022 ),(DG1D135208595),(),(00.03.00.08.00.02.08)'
+}
+DEBUG = {
+  'RIGOL_WRITE' : 1,
+  'RIGOL_READ'  : 1,
+}
 
 class RigolFunctionGenerator:
     """Class to control a Rigol DS1000 series oscilloscope"""
     def __init__(self, device = None):
-        if(device == None):
+        if device:
+            self.device = device
+        else:
             listOfDevices = usbtmc.getDeviceList()
             if(len(listOfDevices) == 0):
-                raise ValueError("There is no device to access")
-    
+                raise RigolError("There is no USBTMC device to access. Make sure " \
+                  "the device is connected and switched on. You can check if the " \
+                  "operating system detected it by running `dmesg`.")
             self.device = listOfDevices[0]
-        else:
-            self.device = device
+        try:
+            self.meas = usbtmc.UsbTmcDriver(self.device)
+        except usbtmc.PermissionError:
+            raise RigolError( "Please adjust the permissions of the file " \
+              "%s to allow regular users to read and write to it ('chmod 777 %s') " \
+              "or run this software as superuser (not recommended)." % (self.device, self.device) )
+        except usbtmc.NoSuchFileError:
+            raise RigolError( "You tried to access the USBTMC device %s which doesn't "\
+              "exist in your system. Make sure it's plugged in and detected by your " \
+              "operating sytem by running `dmesg`." % self.device )
 
-        self.meas = usbtmc.UsbTmcDriver(self.device)
+        self.debugLevel = 10
  
         self.name = self.meas.getName()
         print self.name
+
+    def debug(self, message, debugClass):
+        debugLevel = DEBUG[debugClass]
+        if debugLevel >= self.debugLevel:
+            print message
  
     def write(self, command):
         """Send an arbitrary command directly to the scope"""
-        print command
+        debug(command, D_RIGOL_WRITE)
         self.meas.write(command)
         time.sleep( DG1022_SLEEP_AFTER_WRITE )
  
@@ -65,10 +96,22 @@ class RigolFunctionGenerator:
         self.activate(channel)
 
     def activate(self, channel=1):
-        channel = self.validate(channel)
+        channel = self.validateChannelNumber(channel)
         self.write("OUTP%s ON" % channel)
 
-    def validate(self, channel):
+    @staticmethod
+    def validate(request, response):
+        m = re.match( VALID_RESPONSES[request]['full'], response)
+        if not m:
+            raise RigolError('Response "%s" for the request "%s" was not expected and may be invalid.' % (response, request) )
+        for group in VALID_RESPONSES[request]['groups'].keys():
+            matched_string = m.groupdict()[group]
+            g = re.match( VALID_RESPONSES[request]['groups'][group], matched_string )
+            if not g:
+                raise RigolError('This software does not yet support products with %s as %s name so far.' % (matched_string, group) )
+        return m.groupdict()
+
+    def validateChannelNumber(self, channel):
         if channel not in [1,2]:
             raise RigolUsageError("Only channels 1 and 2 are valid")
         return ":CH2" if channel == 2 else ""
@@ -77,4 +120,8 @@ class RigolError(Exception):
     pass
 
 class RigolUsageError(RigolError):
-	    pass
+    pass
+
+class RigolProgramming(RigolError):
+    pass
+

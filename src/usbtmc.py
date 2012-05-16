@@ -16,13 +16,19 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import os
+import errno
 
 class UsbTmcDriver:
     """Simple implementation of a USBTMC device driver, in the style of visa.h"""
  
     def __init__(self, device):
         self.device = device
-        self.FILE = os.open(device, os.O_RDWR)
+        try:
+            self.FILE = os.open(device, os.O_RDWR)
+        except OSError, e:
+            if e.errno == errno.EACCES: raise PermissionError()
+            if e.errno == errno.ENOENT: raise NoSuchFileError()
+            raise UsbTmcError("unknown error: could not open the file %s: %s" % (device, e))
  
         # TODO: Test that the file opened
  
@@ -48,3 +54,12 @@ def getDeviceList():
             result.append("/dev/" + fname)
 
     return result
+
+class UsbTmcError(Exception):
+    pass
+
+class PermissionError(UsbTmcError):
+    pass
+
+class NoSuchFileError(UsbTmcError):
+    pass
