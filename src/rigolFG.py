@@ -16,10 +16,13 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import usbtmc
+import time
 
 # The class RigolFunctionGenerator is able to control the
 # function generator Rigol DG1022. Read more on
 # http://blog.philippklaus.de/2012/05/rigol-dg1022-arbitrary-waveform-function-generator/
+
+DG1022_SLEEP_AFTER_WRITE = 0.01
 
 class RigolFunctionGenerator:
     """Class to control a Rigol DS1000 series oscilloscope"""
@@ -40,12 +43,38 @@ class RigolFunctionGenerator:
  
     def write(self, command):
         """Send an arbitrary command directly to the scope"""
+        print command
         self.meas.write(command)
+        time.sleep( DG1022_SLEEP_AFTER_WRITE )
  
     def read(self, command):
         """Read an arbitrary amount of data directly from the scope"""
         return self.meas.read(command)
- 
+
     def reset(self):
         """Reset the instrument"""
         self.meas.sendReset()
+
+    def sine(self, frequency, channel=1, voltage=1, offset=0, phase=0):
+        self.write("FUNC SIN")
+        self.write("FREQ %d" % frequency)
+        self.write("VOLT:UNIT VPP")
+        self.write("VOLT %.3f" % voltage)
+        self.write("VOLT:OFFS %.3f" % offset)
+        self.write("PHAS %d" % phase)
+        self.activate(channel)
+
+    def activate(self, channel=1):
+        channel = self.validate(channel)
+        self.write("OUTP%s ON" % channel)
+
+    def validate(self, channel):
+        if channel not in [1,2]:
+            raise RigolUsageError("Only channels 1 and 2 are valid")
+        return ":CH2" if channel == 2 else ""
+
+class RigolError(Exception):
+    pass
+
+class RigolUsageError(RigolError):
+	    pass
