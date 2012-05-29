@@ -1,4 +1,5 @@
 # pyOscilloskop
+# -*- encoding: UTF8 -*-
 #
 # Copyright (19.2.2011) Sascha Brinkmann
 #

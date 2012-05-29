@@ -1,6 +1,8 @@
 # pyOscilloskop
+# -*- encoding: UTF8 -*-
 #
 # Copyright (19.2.2011) Sascha Brinkmann
+#           (2012) Philipp Klaus
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -18,8 +20,9 @@
 import usbtmc
 import rigolScopeChannel
 import timeAxis
+from rigolDevice import RigolDevice, RigolError, RigolUsageError
         
-class RigolScope:
+class RigolScope(RigolDevice):
     CHANNEL1 = "CHAN1"
     CHANNEL2 = "CHAN2"
     GET_TIME_SCALE = "TIM"
@@ -29,40 +32,13 @@ class RigolScope:
 
     """Class to control a Rigol DS1000 series oscilloscope"""
     def __init__(self, device = None):
-        if(device == None):
-            listOfDevices = usbtmc.getDeviceList()
-            if(len(listOfDevices) == 0):
-                raise ValueError("There is no device to access")
-    
-            self.device = listOfDevices[0]
-        else:
-            self.device = device
-        self.initScope()
-
-    def initScope(self):
-        print "Connection to device: " + self.device
-
-        self.meas = usbtmc.UsbTmcDriver(self.device)
-
-        print "Devicename: " + self.getName()
+        RigolDevice.__init__(self, device)
 
         self.channel1 = rigolScopeChannel.RigolScopeChannel(self, self.CHANNEL1);
         self.channel2 = rigolScopeChannel.RigolScopeChannel(self, self.CHANNEL2);        
         
-    def write(self, command):
-        """Send an arbitrary command directly to the scope"""
-        self.meas.write(command)
-        
-    def read(self, command):
-        """Read an arbitrary amount of data directly from the scope"""
-        return self.meas.read(command)
-        
-    def reset(self):
-        """Reset the instrument"""
-        self.meas.sendReset()
-
     def getName(self):
-        return self.meas.getName()
+        return self.dev.getIDN()
 
     def getDevice(self):
         return self.device

@@ -1,4 +1,5 @@
 #!/usr/bin/python
+# -*- encoding: UTF8 -*-
 
 # pyOscilloskop
 #

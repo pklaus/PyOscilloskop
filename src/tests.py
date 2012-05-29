@@ -1,4 +1,5 @@
 #!/usr/bin/env python2
+# -*- encoding: UTF8 -*-
 
 import re
 import rigolFG

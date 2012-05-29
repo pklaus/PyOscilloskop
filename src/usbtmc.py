@@ -1,4 +1,5 @@
 # pyOscilloskop
+# -*- encoding: UTF8 -*-
 #
 # Copyright (19.2.2011) Sascha Brinkmann
 #           (2012) Philipp Klaus
@@ -38,8 +39,8 @@ class UsbTmcDriver:
  
     def read(self, length = 4000):
         return os.read(self.FILE, length)
- 
-    def getName(self):
+
+    def getIDN(self):
         self.write("*IDN?")
         return self.read(300)
  
