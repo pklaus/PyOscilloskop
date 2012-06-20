@@ -28,9 +28,11 @@ class RigolDevice(object):
 
     ## min debug level to print debug information:
     DEBUG_CATEGORIES = {
-      "RIGOL_WRITE": 1,
-      "RIGOL_READ" : 1
+      "RIGOL_WRITE": 4,
+      "RIGOL_READ" : 4
     }
+
+    debugLevel = 1
 
     """Class to control a Rigol device such as
        a DS1000 series oscilloscope
@@ -55,12 +57,9 @@ class RigolDevice(object):
             raise RigolError( "You tried to access the USBTMC device %s which doesn't "\
               "exist in your system. Make sure it's plugged in and detected by your " \
               "operating sytem by running `dmesg`." % self.device )
- 
-        self.debugLevel = 1
 
     def debug(self, message, debugClass):
-        debugLevel = self.DEBUG_CATEGORIES[debugClass]
-        if debugLevel >= self.debugLevel:
+        if self.debugLevel >= self.DEBUG_CATEGORIES[debugClass]:
             if len(message) < 60: print message
             else: print message[0:50], " ... ", message[-10:]
  
