@@ -29,7 +29,7 @@ parser = OptionParser()
 parser.add_option("-p", "--plot", action="store_false", help="Shows the window with the plot")
 parser.add_option("-1", "--hideChannel1", action="store_true", default=False, help="Hides Channel 1 in the plot")
 parser.add_option("-2", "--hideChannel2", action="store_true", default=False, help="Hides Channel 2 in the plot")
-parser.add_option("-i", "--informations", action="store_false", help="Prints scope informations")
+parser.add_option("-i", "--informations", action="store_true", default=False, help="Prints scope informations")
 parser.add_option("-s", "--savePlot", metavar="filename", help="Saves the plot into a image")
 parser.add_option("-t", "--title", metavar="title", help="Set the title of the plot")
 parser.add_option("-d", "--hideDate", action="store_true", default=False, help="Hides the date in the plot")
@@ -44,7 +44,7 @@ listOfDevices = usbtmc.getDeviceList()
 systemArguments = sys.argv
 
 """Initialize our scope"""
-if(len(listOfDevices) == 0):
+if len(listOfDevices) == 0:
     print "You need one or more devices"
     pass
 
@@ -54,7 +54,7 @@ scope = rigolScope.RigolScope(choosenDevice)
 
 
 
-if(options.informations != None):
+if options.informations:
     print "Device: ", choosenDevice
     print "Name: ", scope.getName()
     
@@ -88,31 +88,28 @@ def fillPlot(options):
     if (not(options.hideChannel2) and scope.getChannel2().isChannelActive()):
         plot.plot(timeAxis, channel2Data)
     title = "Oscilloskop"
-    if(options.title != None):
+    if options.title != None:
         title = options.title
-    if(options.hideDate == False):
+    if options.hideDate == False:
         title = title + " (" + strftime("%Y-%m-%d %H:%M:%S") + ")"
     plot.title(title)
     plot.ylabel("Voltage (V)")
     plot.xlabel("Time (" + time.getUnit() + ")")
     plot.xlim(timeAxis[0], timeAxis[599])
 
-if(options.savePlot != None or options.plot != None):
+if options.savePlot != None or options.plot != None:
     fillPlot(options)
     
-if(options.restart):
+if options.restart:
     scope.run()
     
 scope.reactivateControlButtons()
 
-if(options.savePlot != None):
+if options.savePlot != None:
     print "Save plot to: ", options.savePlot
     plot.draw()
     plot.savefig(options.savePlot)
 
-if(options.plot != None):
+if options.plot != None:
         """Plot the data"""
         plot.show()
-        
-
-
