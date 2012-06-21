@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 # -*- encoding: UTF8 -*-
 
 # pyOscilloskop
@@ -20,6 +20,7 @@
 
 import matplotlib.pyplot as plot
 import rigolScope
+from rigolDevice import RigolDevice, RigolError, RigolUsageError, RigolTimeoutError
 import sys
 import usbtmc
 from optparse import OptionParser
@@ -45,13 +46,17 @@ systemArguments = sys.argv
 
 """Initialize our scope"""
 if len(listOfDevices) == 0:
-    print("You need one or more devices")
-    pass
+    print "No USBTMC device found. Make sure it is connected and switched on."
+    #parser.print_help()
+    sys.exit(1)
 
 choosenDevice = listOfDevices[0]
 
-scope = rigolScope.RigolScope(choosenDevice)
-
+try:
+    scope = rigolScope.RigolScope(choosenDevice)
+except RigolError, e:
+    print e
+    sys.exit(1)
 
 
 if options.informations:
