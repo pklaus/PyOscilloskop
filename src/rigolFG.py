@@ -58,7 +58,7 @@ class RigolFunctionGenerator(RigolDevice):
         # check identification
         idn = self.dev.getIDN()
         info = RigolFunctionGenerator.validate('*IDN?', idn)
-        print "Discovered a %s from %s." % (info["model"], info["manufacturer"])
+        print("Discovered a %s from %s." % (info["model"], info["manufacturer"]))
         self.lock()
 
     def __del__(self):
@@ -67,8 +67,8 @@ class RigolFunctionGenerator(RigolDevice):
                 ## Get errors from the device and print them before quitting the program.
                 errors = self.clearErrors()
                 if errors:
-                    print 'The DG1022 reported problems:'
-                    for error in errors: print '"%s" (error number %d)' % (error[1], error[0])
+                    print('The DG1022 reported problems:')
+                    for error in errors: print('"%s" (error number %d)' % (error[1], error[0]))
             self.unlock()
         except:
             pass
@@ -195,7 +195,7 @@ class RigolFunctionGenerator(RigolDevice):
         ## rescale the values (multiplication with 0.999 seems to be necessary due to float inaccuracies).
         seq = [int(val*(high-low)*0.999/(cur_high-cur_low)) for val in seq]
         if min(seq) < low or max(seq) > high:
-            print seq
+            print(seq)
             raise NameError("Something went wrong when rescaling values: min: %d, max: %d." % (min(seq), max(seq)))
         return seq
 

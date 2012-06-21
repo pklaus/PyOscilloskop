@@ -49,7 +49,7 @@ class RigolScopeChannel:
         voltscale = self.getVoltageScale();
         voltoffset = self.getVoltageOffset();
         
-        print "Offset: ", voltoffset/voltscale*25
+        print("Offset: ", voltoffset/voltscale*25)
                 
         # Now, we know from experimentation that the scope display range is actually
         # 30-229.  So shift by 130 - the voltage offset in counts, then scale to

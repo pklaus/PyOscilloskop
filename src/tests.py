@@ -15,6 +15,6 @@ testResponses = [
 
 for response in testResponses:
     try:
-        print rigolFG.RigolFunctionGenerator.validate('*IDN?', response)
+        print(rigolFG.RigolFunctionGenerator.validate('*IDN?', response))
     except Exception, e:
-        print type(e), str(e)
+        print(type(e), str(e))

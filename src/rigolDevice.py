@@ -60,8 +60,8 @@ class RigolDevice(object):
 
     def debug(self, message, debugClass):
         if self.debugLevel >= self.DEBUG_CATEGORIES[debugClass]:
-            if len(message) < 60: print message
-            else: print message[0:50], " ... ", message[-10:]
+            if len(message) < 60: print(message)
+            else: print(message[0:50], " ... ", message[-10:])
  
     def write(self, command):
         """Send a command directly to the device"""

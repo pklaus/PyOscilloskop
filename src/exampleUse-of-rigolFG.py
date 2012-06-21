@@ -7,7 +7,7 @@ import sys
 try:
     fg = RigolFunctionGenerator()
 except RigolError, e:
-    print e
+    print(e)
     sys.exit(1)
 
 ## Set up channel 1 to generate a sine wave with 10 Hz:

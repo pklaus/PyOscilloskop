@@ -75,7 +75,7 @@ class RigolUI(object):
         self.plotFigure()
         
     def plotFigure(self):
-        print "Plot figure"
+        print("Plot figure")
         
         parameter = " -p"
         if(self.builder.get_object("checkRestartAfterAquring").get_active()):

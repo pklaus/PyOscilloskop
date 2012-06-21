@@ -45,7 +45,7 @@ systemArguments = sys.argv
 
 """Initialize our scope"""
 if len(listOfDevices) == 0:
-    print "You need one or more devices"
+    print("You need one or more devices")
     pass
 
 choosenDevice = listOfDevices[0]
@@ -55,19 +55,19 @@ scope = rigolScope.RigolScope(choosenDevice)
 
 
 if options.informations:
-    print "Device: ", choosenDevice
-    print "Name: ", scope.getName()
+    print("Device: ", choosenDevice)
+    print("Name: ", scope.getName())
     
-    print "Channel 1 - Active: ", scope.getChannel1().isChannelActive()
-    print "Channel 1 - Voltage scale: ", scope.getChannel1().getVoltageScale(), "V/div"
-    print "Channel 1 - Voltage offset: ", scope.getChannel1().getVoltageOffset(), "V"
+    print("Channel 1 - Active: ", scope.getChannel1().isChannelActive())
+    print("Channel 1 - Voltage scale: ", scope.getChannel1().getVoltageScale(), "V/div")
+    print("Channel 1 - Voltage offset: ", scope.getChannel1().getVoltageOffset(), "V")
     
-    print "Channel 2 - Active: ", scope.getChannel2().isChannelActive()
-    print "Channel 2 - Voltage scale: ", scope.getChannel2().getVoltageScale(), "V/div"
-    print "Channel 2 - Voltage offset: ", scope.getChannel2().getVoltageOffset(), "V"
+    print("Channel 2 - Active: ", scope.getChannel2().isChannelActive())
+    print("Channel 2 - Voltage scale: ", scope.getChannel2().getVoltageScale(), "V/div")
+    print("Channel 2 - Voltage offset: ", scope.getChannel2().getVoltageOffset(), "V")
     
-    print "Timescale: ", scope.getTimeScale(), "sec/div"
-    print "Timescale offset: ", scope.getTimescaleOffset(), "sec"
+    print("Timescale: ", scope.getTimeScale(), "sec/div")
+    print("Timescale offset: ", scope.getTimescaleOffset(), "sec")
 
 """You have to reactivate the keys on the scope after every access over the usb interface"""
 scope.reactivateControlButtons()
@@ -106,7 +106,7 @@ if options.restart:
 scope.reactivateControlButtons()
 
 if options.savePlot != None:
-    print "Save plot to: ", options.savePlot
+    print("Save plot to: ", options.savePlot)
     plot.draw()
     plot.savefig(options.savePlot)
 
