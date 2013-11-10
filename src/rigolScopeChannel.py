@@ -36,8 +36,7 @@ class RigolScopeChannel:
         return self.rigolScope.getScopeInformationInteger(self.channelName, self.rigolScope.GET_DISPLAY_ACTIVE) == 1
         
     def getData(self):
-        self.rigolScope.write(":WAV:POIN:MODE NOR")
-        self.rigolScope.write(":WAV:DATA? " + self.channelName)
+        self.rigolScope.strategy.getData(self.rigolScope, self.channelName)
         
         rawdata = self.rigolScope.read(9000)
         data = numpy.frombuffer(rawdata, 'B')

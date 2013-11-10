@@ -22,6 +22,20 @@ import rigolScopeChannel
 import timeAxis
 from rigolDevice import RigolDevice, RigolError, RigolUsageError
         
+class ScopeStrategy:
+	pass
+
+class DS1000Strategy(ScopeStrategy):
+	def getData(self, scope, channel):
+		scope.write(":WAV:POIN:MODE NOR")
+		scope.write(":WAV:DATA? " + channel)
+
+class DS2000Strategy(ScopeStrategy):
+	def getData(self, scope, channel):
+		scope.write(":WAV:POIN:MODE MAX")
+		scope.write(":WAV:SOUR " + channel)
+		scope.write(":WAV:DATA?")
+
 class RigolScope(RigolDevice):
     CHANNEL1 = "CHAN1"
     CHANNEL2 = "CHAN2"
@@ -29,16 +43,24 @@ class RigolScope(RigolDevice):
     GET_SCALE = "SCAL?"
     GET_OFFSET = "OFFS?"
     GET_DISPLAY_ACTIVE = "DISPlay?"
+    strategies = {}
+    strategies["DS1000"] = DS1000Strategy()
+    strategies["DS2072"] = DS2000Strategy()
+    strategies["DS2102"] = DS2000Strategy()
+    strategies["DS2202"] = DS2000Strategy()
 
     """Class to control a Rigol DS1000 series oscilloscope"""
     def __init__(self, device = None):
         RigolDevice.__init__(self, device)
-
+        self.strategy = RigolScope.strategies[self.getModel()]
         self.channel1 = rigolScopeChannel.RigolScopeChannel(self, self.CHANNEL1);
         self.channel2 = rigolScopeChannel.RigolScopeChannel(self, self.CHANNEL2);        
         
     def getName(self):
         return self.dev.getIDN()
+
+    def getModel(self):
+		return self.getName().split(",")[1]
 
     def getDevice(self):
         return self.device
