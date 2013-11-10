@@ -44,15 +44,14 @@ class RigolScope(RigolDevice):
     GET_OFFSET = "OFFS?"
     GET_DISPLAY_ACTIVE = "DISPlay?"
     strategies = {}
-    strategies["DS1000"] = DS1000Strategy()
-    strategies["DS2072"] = DS2000Strategy()
-    strategies["DS2102"] = DS2000Strategy()
-    strategies["DS2202"] = DS2000Strategy()
+    strategies["DS1"] = DS1000Strategy()
+    strategies["DS2"] = DS2000Strategy()
 
     """Class to control a Rigol DS1000 series oscilloscope"""
     def __init__(self, device = None):
+
         RigolDevice.__init__(self, device)
-        self.strategy = RigolScope.strategies[self.getModel()]
+        self.strategy = RigolScope.strategies[self.getModel()[:3]]
         self.channel1 = rigolScopeChannel.RigolScopeChannel(self, self.CHANNEL1);
         self.channel2 = rigolScopeChannel.RigolScopeChannel(self, self.CHANNEL2);        
         
