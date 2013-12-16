@@ -85,6 +85,10 @@ class RigolDevice(object):
         """Reset the device"""
         self.dev.sendReset()
 
+    def __del__(self):
+        try: self.dev = None
+        except: pass
+
 class RigolError(Exception):
     pass
 

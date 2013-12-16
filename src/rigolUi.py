@@ -20,6 +20,7 @@
 
 import gtk
 import rigolScope
+from rigolDevice import RigolError
 import os
 
 class RigolUI(object):
@@ -28,16 +29,7 @@ class RigolUI(object):
         self.builder.add_from_file("oscilloskopControl.glade")
         self.builder.connect_signals(self)
         self.win =  self.builder.get_object('window1')
-        try:
-            self.scope = rigolScope.RigolScope()
-            self.win.set_title("Oscilloskope remote control")
-            self.figureCounter = 1
-            
-            self.showOscilloskopInformations()
-        except ValueError:
-            self.info_msg("You have to turn on your scope and connect it to the computer.", gtk.MESSAGE_ERROR)
-            self.quit()
-        
+       
     def showOscilloskopInformations(self):
         scope = self.scope
         builder = self.builder
@@ -55,6 +47,17 @@ class RigolUI(object):
         scope.reactivateControlButtons()
 
     def run(self):
+        try:
+            self.scope = rigolScope.RigolScope()
+            ## To get more debug output, do:
+            #self.scope.debugLevel = 5
+            self.win.set_title("Oscilloskope remote control")
+            self.figureCounter = 1
+            
+            self.showOscilloskopInformations()
+        except RigolError, e:
+            self.info_msg("You have to turn on your scope and connect it to the computer.\n\n%s" % e, gtk.MESSAGE_ERROR)
+            self.quit()
         try:
             gtk.main()
         except KeyboardInterrupt:

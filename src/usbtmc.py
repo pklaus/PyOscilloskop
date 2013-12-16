@@ -47,6 +47,10 @@ class UsbTmcDriver:
     def sendReset(self):
         self.write("*RST")
 
+    def __del__(self):
+        try: os.close(self.FILE)
+        except: pass
+
 def getDeviceList():
     dirList=os.listdir("/dev")
     result=list()
