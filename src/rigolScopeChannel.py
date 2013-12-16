@@ -58,6 +58,6 @@ class RigolScopeChannel:
         #Sets the voltage offset
         data = data + voltoffset/voltscale
         
-        data = data[0:600:1]
+        data = data[10:]
         
         return data
