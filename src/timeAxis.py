@@ -24,21 +24,15 @@ class TimeAxis:
         self.timescale = timescale
     
     def _getTime(self):
-        print("timescale: ", self.timescale)
-        time = numpy.arange(-300.0/50*self.timescale, 300.0/50*self.timescale, self.timescale/50.0)
-        
-        return time
+        return numpy.arange(-300.0/50*self.timescale, 300.0/50*self.timescale, self.timescale/50.0)
     
     def getTimeAxis(self):
         time = self._getTime()
-        
         if (time[599] < 1e-2):
             time = time * 1e6
         elif (time[599] < 1):
             time = time * 1e3
-            
         time = time[0:600:1]
-
         return time
     
     def getUnit(self):
@@ -50,5 +44,4 @@ class TimeAxis:
             tUnit = "mS"
         else:
             tUnit = "S"
-            
         return tUnit

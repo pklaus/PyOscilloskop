@@ -66,16 +66,28 @@ class RigolDevice(object):
     def write(self, command):
         """Send a command directly to the device"""
         self.debug(command, "RIGOL_WRITE")
-        self.dev.write(command)
+        try:
+            self.dev.write(command)
+        except OSError as e:
+            raise RigolError("Couldn't communicate with the scope: " + str(e))
         time.sleep( self.SLEEP_AFTER_WRITE )
         if len(command) > 20:
             time.sleep( self.SLEEP_MS_PER_CHAR * 0.001 * len(command) )
  
     def read(self, length = 4000):
-        """Read a from the device"""
+        """Read text data from the device"""
+        binary_response = self.read_binary(length)
         try:
-            response = self.dev.read(length)
-        except OSError, e:
+            return binary_response.decode('ascii')
+        except Exception as e:
+            raise RigolError('Could not decode this message:\n' + str(e))
+
+
+    def read_binary(self, length = 4000):
+        """Read binary data from the device"""
+        try:
+            response = self.dev.read_binary(length)
+        except OSError as e:
             if e.errno == errno.ETIMEDOUT: raise RigolTimeoutError()
             else: raise e
         self.debug(response, "RIGOL_READ")

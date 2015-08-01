@@ -27,7 +27,7 @@ class UsbTmcDriver:
         self.device = device
         try:
             self.FILE = os.open(device, os.O_RDWR)
-        except OSError, e:
+        except OSError as e:
             if e.errno == errno.EACCES: raise PermissionError()
             if e.errno == errno.ENOENT: raise NoSuchFileError()
             raise UsbTmcError("unknown error: could not open the file %s: %s" % (device, e))
@@ -35,10 +35,17 @@ class UsbTmcDriver:
         # TODO: Test that the file opened
  
     def write(self, command):
-        os.write(self.FILE, command);
+        os.write(self.FILE, command.encode('ascii'))
  
-    def read(self, length = 4000):
+    def read_binary(self, length = 4000):
         return os.read(self.FILE, length)
+
+    def read(self, length = 4000):
+        binary_response = self.read_binary(length)
+        try:
+            return binary_response.decode('ascii')
+        except Exception as e:
+            raise UsbTmcError('Could not decode this message:\n' + str(e))
 
     def getIDN(self):
         self.write("*IDN?")

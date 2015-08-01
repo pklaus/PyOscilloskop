@@ -23,18 +23,18 @@ import timeAxis
 from rigolDevice import RigolDevice, RigolError, RigolUsageError
         
 class ScopeStrategy:
-	pass
+    pass
 
 class DS1000Strategy(ScopeStrategy):
-	def getData(self, scope, channel):
-		scope.write(":WAV:POIN:MODE NOR")
-		scope.write(":WAV:DATA? " + channel)
+    def getData(self, scope, channel):
+        scope.write(":WAV:POIN:MODE NOR")
+        scope.write(":WAV:DATA? " + channel)
 
 class DS2000Strategy(ScopeStrategy):
-	def getData(self, scope, channel):
-		scope.write(":WAV:POIN:MODE MAX")
-		scope.write(":WAV:SOUR " + channel)
-		scope.write(":WAV:DATA?")
+    def getData(self, scope, channel):
+        scope.write(":WAV:POIN:MODE MAX")
+        scope.write(":WAV:SOUR " + channel)
+        scope.write(":WAV:DATA?")
 
 class RigolScope(RigolDevice):
     CHANNEL1 = "CHAN1"
@@ -59,7 +59,7 @@ class RigolScope(RigolDevice):
         return self.dev.getIDN()
 
     def getModel(self):
-		return self.getName().split(",")[1]
+        return self.getName().split(",")[1]
 
     def getDevice(self):
         return self.device

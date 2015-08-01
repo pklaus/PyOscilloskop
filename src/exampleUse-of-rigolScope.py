@@ -8,8 +8,8 @@ import sys
 
 try:
     scope = RigolScope()
-except RigolError, e:
-    print e
+except RigolError as e:
+    print(e)
     sys.exit(1)
 
 ## To get more debug output, do:

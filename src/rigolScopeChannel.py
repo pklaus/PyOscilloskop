@@ -38,7 +38,7 @@ class RigolScopeChannel:
     def getData(self):
         self.rigolScope.strategy.getData(self.rigolScope, self.channelName)
         
-        rawdata = self.rigolScope.read(9000)
+        rawdata = self.rigolScope.read_binary(9000)
         data = numpy.frombuffer(rawdata, 'B')
 
         # Walk through the data, and map it to actual voltages

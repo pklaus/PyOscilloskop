@@ -46,7 +46,7 @@ systemArguments = sys.argv
 
 """Initialize our scope"""
 if len(listOfDevices) == 0:
-    print "No USBTMC device found. Make sure it is connected and switched on."
+    print("No USBTMC device found. Make sure it is connected and switched on.")
     #parser.print_help()
     sys.exit(1)
 
@@ -54,8 +54,8 @@ choosenDevice = listOfDevices[0]
 
 try:
     scope = rigolScope.RigolScope(choosenDevice)
-except RigolError, e:
-    print e
+except RigolError as e:
+    print(e)
     sys.exit(1)
 
 
