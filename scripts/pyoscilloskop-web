@@ -1,0 +1,45 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+import inspect
+import logging
+import argparse
+
+from pyoscilloskop.webapp import RigolPlugin, api, interface, DEFAULT_CONTEXT 
+
+logger = logging.getLogger(__name__)
+
+def main():
+    #global DEFAULT_CONTEXT
+    parser = argparse.ArgumentParser( 
+      description='Run a web servers for your Rigol Scope' )
+    parser.add_argument('-p', '--port', type=int, default=8080,
+      help='The port to run the web server on.')
+    parser.add_argument('-6', '--ipv6', action='store_true',
+      help='Listen to incoming connections via IPv6 instead of IPv4.')
+    parser.add_argument('-d', '--debug', action='store_true',
+      help='Start in debug mode (with verbose HTTP error pages.')
+    parser.add_argument('--scope-name', help='Name of the oscilloscope to display.')
+    parser.add_argument('device', help='The /dev/usbtmc0 -like device name.')
+    args = parser.parse_args()
+
+    if args.scope_name : DEFAULT_CONTEXT['scope_name'] = args.scope_name
+
+    api.install(RigolPlugin())
+    interface.mount('/api', api)
+    app = interface
+
+    if args.debug and args.ipv6:
+        args.error('You cannot use IPv6 in debug mode, sorry.')
+    if args.debug:
+        run(app, host='0.0.0.0', port=args.port, debug=True, reloader=True)
+    else:
+        if args.ipv6:
+            # CherryPy is Python3 ready and has IPv6 support:
+            app.run(host='::', server='cherrypy', port=args.port)
+        else:
+            app.run(host='0.0.0.0', server='cherrypy', port=args.port)
+
+if __name__ == '__main__':
+    main()
+

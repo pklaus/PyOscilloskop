@@ -19,9 +19,10 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import gtk
-import rigolScope
-from rigolDevice import RigolError
 import os
+
+from pyoscilloskop import rigolScope
+from pyoscilloskop import RigolError
 
 class RigolUI(object):
     def __init__(self):
@@ -55,7 +56,7 @@ class RigolUI(object):
             self.figureCounter = 1
             
             self.showOscilloskopInformations()
-        except RigolError, e:
+        except RigolError as e:
             self.info_msg("You have to turn on your scope and connect it to the computer.\n\n%s" % e, gtk.MESSAGE_ERROR)
             self.quit()
         try:
@@ -89,9 +90,9 @@ class RigolUI(object):
             
         if(not(self.builder.get_object("checkChannel2Showchannel").get_active())):
             parameter += " -2"
-            
-        os.system("./rigolCli.py " + parameter)
-        
+
+        os.system("rigolCli.py " + parameter)
+
 if __name__ == '__main__':
     rigolUiApp = RigolUI()
     rigolUiApp.run()

@@ -1,0 +1,2 @@
+recursive-include pyoscilloskop/webapp/views *
+recursive-include pyoscilloskop/webapp/static *

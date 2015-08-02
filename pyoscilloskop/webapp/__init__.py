@@ -1,22 +1,26 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import os
+import inspect
+import logging
+
+from pyoscilloskop import RigolScope
+from pyoscilloskop import RigolError
+
 from bottle import Bottle, route, run, post, get, request, response, redirect, error, abort, static_file, TEMPLATE_PATH, Jinja2Template, url
 from bottle import jinja2_template as template, jinja2_view as view
 
-#import json
-#import time
-import os
-#from datetime import datetime
-#import string
-#import re
-#from posts import Posts
-#import markdown
-import logging
-
 logger = logging.getLogger(__name__)
 
-TEMPLATE_PATH.append(os.path.join(os.path.split(os.path.realpath(__file__))[0],'views'))
+# Find out where our resource files are located:
+try:
+    from pkg_resources import resource_filename, Requirement, require
+    PATH = resource_filename("pyoscilloskop", "webapp")
+except:
+    PATH = './'
+
+TEMPLATE_PATH.insert(0, os.path.join(PATH, 'views'))
 
 ### Global objects
 POSTS = object()
@@ -24,11 +28,9 @@ DEFAULT_CONTEXT = {
   'scope_name': 'Rigol Oscilloscope'
 }
 
-### The plugin
+Jinja2Template.defaults = DEFAULT_CONTEXT
 
-from rigolScope import RigolScope
-from rigolDevice import RigolError
-import inspect
+### The plugin
 
 class RigolPlugin(object):
     ''' This plugin passes an sqlite3 database handle to route callbacks
@@ -109,7 +111,7 @@ def current_trace(scope):
 
 @interface.route('/static/<path:path>')
 def static(path):
-    return static_file(path, root='./static')
+    return static_file(path, root=os.path.join(PATH, 'static'))
 
 @interface.route('/')
 @view('home.jinja2')
@@ -120,41 +122,4 @@ def home():
 def robots():
     response.content_type = 'text/plain'
     return "User-agent: *\n{0}: /".format('Disallow')
-
-def main():
-    global POSTS, DEFAULT_CONTEXT, ALLOW_CRAWLING
-    import argparse
-    parser = argparse.ArgumentParser( 
-      description='Run a web servers for your Rigol Scope' )
-    parser.add_argument('-p', '--port', type=int, default=8080,
-      help='The port to run the web server on.')
-    parser.add_argument('-6', '--ipv6', action='store_true',
-      help='Listen to incoming connections via IPv6 instead of IPv4.')
-    parser.add_argument('-d', '--debug', action='store_true',
-      help='Start in debug mode (with verbose HTTP error pages.')
-    parser.add_argument('--scope-name', help='Name of the oscilloscope to display.')
-    parser.add_argument('device', help='The /dev/usbtmc0 -like device name.')
-    args = parser.parse_args()
-
-    if args.scope_name : DEFAULT_CONTEXT['scope_name'] = args.scope_name
-    Jinja2Template.defaults = DEFAULT_CONTEXT
-
-
-    api.install(RigolPlugin())
-    interface.mount('/api', api)
-    app = interface
-
-    if args.debug and args.ipv6:
-        args.error('You cannot use IPv6 in debug mode, sorry.')
-    if args.debug:
-        run(app, host='0.0.0.0', port=args.port, debug=True, reloader=True)
-    else:
-        if args.ipv6:
-            # CherryPy is Python3 ready and has IPv6 support:
-            run(app, host='::', server='cherrypy', port=args.port)
-        else:
-            run(app, host='0.0.0.0', server='cherrypy', port=args.port)
-
-if __name__ == '__main__':
-    main()
 

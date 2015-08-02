@@ -18,13 +18,15 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import matplotlib.pyplot as plot
-import rigolScope
-from rigolDevice import RigolDevice, RigolError, RigolUsageError, RigolTimeoutError
 import sys
-import usbtmc
 from optparse import OptionParser
 from time import strftime
+
+import matplotlib.pyplot as plot
+
+from pyoscilloskop import rigolScope
+from pyoscilloskop import RigolDevice, RigolError, RigolUsageError, RigolTimeoutError
+from pyoscilloskop import usbtmc
 
 parser = OptionParser()
 parser.add_option("-p", "--plot", action="store_false", help="Shows the window with the plot")

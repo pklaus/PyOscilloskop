@@ -1,8 +1,8 @@
 #!/usr/bin/env python2
 # -*- encoding: UTF8 -*-
 
-from rigolScope import RigolScope
-from rigolDevice import RigolError
+from pyoscilloskop import RigolScope
+from pyoscilloskop import RigolError
 
 import sys
 

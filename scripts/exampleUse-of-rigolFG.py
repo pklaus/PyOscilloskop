@@ -1,7 +1,7 @@
 #!/usr/bin/env python2
 # -*- encoding: UTF8 -*-
 
-from rigolFG import RigolFunctionGenerator, RigolError
+from pyoscilloskop import RigolFunctionGenerator, RigolError
 import sys
 
 try:

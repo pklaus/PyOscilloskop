@@ -2,7 +2,8 @@
 # -*- encoding: UTF8 -*-
 
 import re
-import rigolFG
+
+from pyoscilloskop import rigolFG
 
 testResponses = [ 
   #manufacterer, model, serial number and the edition number

@@ -17,10 +17,10 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import usbtmc
-import rigolScopeChannel
-import timeAxis
-from rigolDevice import RigolDevice, RigolError, RigolUsageError
+from . import usbtmc
+from . import rigolScopeChannel
+from . import timeAxis
+from .rigolDevice import RigolDevice, RigolError, RigolUsageError
         
 class ScopeStrategy:
     pass

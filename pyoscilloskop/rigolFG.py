@@ -17,11 +17,11 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import usbtmc
 import time
 import re
 from math import sin
-from rigolDevice import RigolDevice, RigolError, RigolUsageError, RigolTimeoutError
+
+from .rigolDevice import RigolDevice, RigolError, RigolUsageError, RigolTimeoutError
 
 # The class RigolFunctionGenerator is able to control the
 # function generator Rigol DG1022. Read more on
