@@ -30,11 +30,11 @@ class RigolUI(object):
         self.builder.add_from_file("oscilloskopControl.glade")
         self.builder.connect_signals(self)
         self.win =  self.builder.get_object('window1')
-       
+
     def showOscilloskopInformations(self):
         scope = self.scope
         builder = self.builder
-        
+
         builder.get_object("labelConnectedToDevice").set_text(scope.getName() + " (" + scope.getDevice() + ")")
         builder.get_object("checkChannel1Showchannel").set_active(scope.getChannel1().isChannelActive())
         builder.get_object("textChannel1Voltage").set_text(str(scope.getChannel1().getVoltageScale()) + " V/DIV")
@@ -44,17 +44,17 @@ class RigolUI(object):
         builder.get_object("textChannel2Offset").set_text(str(scope.getChannel2().getVoltageOffset()) + " V")
         builder.get_object("textTimeAxisScale").set_text(str(scope.getTimeScale()) + "S/DIV")
         builder.get_object("textTimeAxisOffset").set_text(str(scope.getTimescaleOffset()) + " S")
-        
+
         scope.reactivateControlButtons()
 
     def run(self):
         try:
             self.scope = rigolScope.RigolScope()
             ## To get more debug output, do:
-            #self.scope.debugLevel = 5
+            self.scope.debugLevel = 5
             self.win.set_title("Oscilloskope remote control")
             self.figureCounter = 1
-            
+
             self.showOscilloskopInformations()
         except RigolError as e:
             self.info_msg("You have to turn on your scope and connect it to the computer.\n\n%s" % e, gtk.MESSAGE_ERROR)
@@ -63,13 +63,13 @@ class RigolUI(object):
             gtk.main()
         except KeyboardInterrupt:
             pass
-    
+
     def quit(self):
         gtk.main_quit()
 
     def on_window1_delete_event(self, *args):
         self.quit()
-        
+
     def info_msg(self, msg, messageType=gtk.MESSAGE_INFO):
         dlg = gtk.MessageDialog(parent=self.win, type=messageType, buttons=gtk.BUTTONS_OK, message_format=msg)
         dlg.run()
@@ -77,17 +77,17 @@ class RigolUI(object):
 
     def on_buttonShow_clicked(self, *args):
         self.plotFigure()
-        
+
     def plotFigure(self):
         print("Plot figure")
-        
+
         parameter = " -p"
         if(self.builder.get_object("checkRestartAfterAquring").get_active()):
             parameter += " -r"
-        
+
         if(not(self.builder.get_object("checkChannel1Showchannel").get_active())):
             parameter += " -1"
-            
+
         if(not(self.builder.get_object("checkChannel2Showchannel").get_active())):
             parameter += " -2"
 
@@ -96,4 +96,4 @@ class RigolUI(object):
 if __name__ == '__main__':
     rigolUiApp = RigolUI()
     rigolUiApp.run()
-    
+
