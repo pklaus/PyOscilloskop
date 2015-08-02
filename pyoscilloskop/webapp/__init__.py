@@ -47,7 +47,7 @@ class RigolPlugin(object):
 
     def setup(self, app):
         try:
-            self.scope = RigolScope()
+            self.scope = RigolScope(self.usbtmc_file)
         except RigolError as e:
             logger.error(e)
         ## To get more debug output, do:

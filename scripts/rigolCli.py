@@ -19,49 +19,40 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import sys
-from optparse import OptionParser
+import argparse
 from time import strftime
+import logging
 
 import matplotlib.pyplot as plot
 
 from pyoscilloskop import rigolScope
 from pyoscilloskop import RigolDevice, RigolError, RigolUsageError, RigolTimeoutError
-from pyoscilloskop import usbtmc
 
-parser = OptionParser()
-parser.add_option("-p", "--plot", action="store_false", help="Shows the window with the plot")
-parser.add_option("-1", "--hideChannel1", action="store_true", default=False, help="Hides Channel 1 in the plot")
-parser.add_option("-2", "--hideChannel2", action="store_true", default=False, help="Hides Channel 2 in the plot")
-parser.add_option("-i", "--informations", action="store_true", default=False, help="Prints scope informations")
-parser.add_option("-s", "--savePlot", metavar="filename", help="Saves the plot into a image")
-parser.add_option("-t", "--title", metavar="title", help="Set the title of the plot")
-parser.add_option("-d", "--hideDate", action="store_true", default=False, help="Hides the date in the plot")
-parser.add_option("-r", "--restart", action="store_true", default=False, help="Restart require after plot")
+logging.basicConfig(level=logging.DEBUG)
 
-(options, args) = parser.parse_args()
- 
-""" Example program to plot the Y-T data from Channel 1"""
+parser = argparse.ArgumentParser()
+parser.add_argument("--plot", "-p", action="store_false", help="Shows the window with the plot")
+parser.add_argument("--hideChannel1", "-1", action="store_true", default=False, help="Hides Channel 1 in the plot")
+parser.add_argument("--hideChannel2", "-2", action="store_true", default=False, help="Hides Channel 2 in the plot")
+parser.add_argument("--informations", "-i", action="store_true", default=False, help="Prints scope informations")
+parser.add_argument("--savePlot", "-s", metavar="filename", help="Saves the plot into a image")
+parser.add_argument("--title", "-t", metavar="title", help="Set the title of the plot")
+parser.add_argument("--hideDate", "-d", action="store_true", default=False, help="Hides the date in the plot")
+parser.add_argument("--restart", "-r", action="store_true", default=False, help="Restart require after plot")
+parser.add_argument("device", default="/dev/usbtmc0", nargs="?", help="The usbtmc device to connect to.")
 
-listOfDevices = usbtmc.getDeviceList()
-
-systemArguments = sys.argv
+args = parser.parse_args()
 
 """Initialize our scope"""
-if len(listOfDevices) == 0:
-    print("No USBTMC device found. Make sure it is connected and switched on.")
-    #parser.print_help()
-    sys.exit(1)
-
-choosenDevice = listOfDevices[0]
 
 try:
-    scope = rigolScope.RigolScope(choosenDevice)
+    scope = rigolScope.RigolScope(args.device)
 except RigolError as e:
     print(e)
     sys.exit(1)
 
 
-if options.informations:
+if args.informations:
     print("Device: ", choosenDevice)
     print("Name: ", scope.getName())
     
@@ -104,19 +95,19 @@ def fillPlot(options):
     plot.xlabel("Time (" + time.getUnit() + ")")
     plot.xlim(timeAxis[0], timeAxis[599])
 
-if options.savePlot != None or options.plot != None:
-    fillPlot(options)
+if args.savePlot != None or args.plot != None:
+    fillPlot(args)
     
-if options.restart:
+if args.restart:
     scope.run()
     
 scope.reactivateControlButtons()
 
-if options.savePlot != None:
-    print("Save plot to: ", options.savePlot)
+if args.savePlot != None:
+    print("Save plot to: ", args.savePlot)
     plot.draw()
-    plot.savefig(options.savePlot)
+    plot.savefig(args.savePlot)
 
-if options.plot != None:
+if args.plot != None:
         """Plot the data"""
         plot.show()

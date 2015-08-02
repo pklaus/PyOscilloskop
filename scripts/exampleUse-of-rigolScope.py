@@ -7,7 +7,7 @@ from pyoscilloskop import RigolError
 import sys
 
 try:
-    scope = RigolScope()
+    scope = RigolScope('/dev/usbtmc0')
 except RigolError as e:
     print(e)
     sys.exit(1)

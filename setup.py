@@ -15,6 +15,7 @@ setup(name='PyOscilloskop',
       include_package_data = True,
       zip_safe = True,
       platforms = 'any',
+      requires = ['universal_usbtmc'],
       keywords = 'usbtmc Rigol Oscilloscope Function-Generator',
       classifiers = [
           'Development Status :: 4 - Beta',

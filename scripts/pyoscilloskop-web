@@ -25,7 +25,7 @@ def main():
 
     if args.scope_name : DEFAULT_CONTEXT['scope_name'] = args.scope_name
 
-    api.install(RigolPlugin())
+    api.install(RigolPlugin(args.device))
     interface.mount('/api', api)
     app = interface
 

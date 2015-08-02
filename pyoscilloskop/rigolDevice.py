@@ -17,55 +17,39 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from . import usbtmc
 import time
 import errno
+import logging
+
+from universal_usbtmc import UsbtmcPermissionError, UsbtmcNoSuchFileError
+from universal_usbtmc.backends.linux_kernel import Instrument
+
+logger = logging.getLogger(__name__)
 
 class RigolDevice(object):
     ## defaults for device dependent settings
     SLEEP_AFTER_WRITE = 0.01 # ← needed to give the device some time to commit changes
     SLEEP_MS_PER_CHAR = 0.2 # ← needed for long commands
 
-    ## min debug level to print debug information:
-    DEBUG_CATEGORIES = {
-      "RIGOL_WRITE": 4,
-      "RIGOL_READ" : 4
-    }
-
-    debugLevel = 1
-
     """Class to control a Rigol device such as
        a DS1000 series oscilloscope
        or a DG1022 function generator."""
-    def __init__(self, device = None):
-        if device:
-            self.device = device
-        else:
-            listOfDevices = usbtmc.getDeviceList()
-            if(len(listOfDevices) == 0):
-                raise RigolError("There is no USBTMC device to access. Make sure " \
-                  "the device is connected and switched on. You can check if the " \
-                  "operating system detected it by running `dmesg`.")
-            self.device = listOfDevices[0]
+    def __init__(self, device):
+        self.device = device
         try:
-            self.dev = usbtmc.UsbTmcDriver(self.device)
-        except usbtmc.PermissionError:
+            self.dev = Instrument(self.device)
+        except UsbtmcPermissionError:
             raise RigolError( "Please adjust the permissions of the file " \
               "%s to allow regular users to read and write to it ('chmod 777 %s') " \
               "or run this software as superuser (not recommended)." % (self.device, self.device) )
-        except usbtmc.NoSuchFileError:
+        except UsbtmcNoSuchFileError:
             raise RigolError( "You tried to access the USBTMC device %s which doesn't "\
               "exist in your system. Make sure it's plugged in and detected by your " \
               "operating sytem by running `dmesg`." % self.device )
 
-    def debug(self, message, debugClass):
-        if self.debugLevel >= self.DEBUG_CATEGORIES[debugClass]:
-            if len(message) < 60: print(message)
-            else: print(message[0:50], " ... ", message[-10:])
- 
     def write(self, command):
         """Send a command directly to the device"""
-        self.debug(command, "RIGOL_WRITE")
+        #logger.debug("RIGOL_WRITE " + str(command) )
         try:
             self.dev.write(command)
         except OSError as e:
@@ -76,21 +60,21 @@ class RigolDevice(object):
  
     def read(self, length = 4000):
         """Read text data from the device"""
-        binary_response = self.read_binary(length)
+        binary_response = self.read_raw(length)
         try:
             return binary_response.decode('ascii')
         except Exception as e:
             raise RigolError('Could not decode this message:\n' + str(e))
 
 
-    def read_binary(self, length = 4000):
+    def read_raw(self, length = 4000):
         """Read binary data from the device"""
         try:
-            response = self.dev.read_binary(length)
+            response = self.dev.read_raw(length)
         except OSError as e:
             if e.errno == errno.ETIMEDOUT: raise RigolTimeoutError()
             else: raise e
-        self.debug(response, "RIGOL_READ")
+        #logger.debug("RIGOL_READ " + str(response))
         return response
 
     def reset(self):

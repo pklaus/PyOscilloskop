@@ -5,7 +5,7 @@ from pyoscilloskop import RigolFunctionGenerator, RigolError
 import sys
 
 try:
-    fg = RigolFunctionGenerator()
+    fg = RigolFunctionGenerator('/dev/usbtmc0')
 except RigolError, e:
     print(e)
     sys.exit(1)

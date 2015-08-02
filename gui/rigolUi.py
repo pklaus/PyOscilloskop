@@ -49,7 +49,7 @@ class RigolUI(object):
 
     def run(self):
         try:
-            self.scope = rigolScope.RigolScope()
+            self.scope = rigolScope.RigolScope('/dev/ttyUSB0')
             ## To get more debug output, do:
             self.scope.debugLevel = 5
             self.win.set_title("Oscilloskope remote control")
