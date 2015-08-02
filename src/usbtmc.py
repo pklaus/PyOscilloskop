@@ -76,3 +76,9 @@ class PermissionError(UsbTmcError):
 
 class NoSuchFileError(UsbTmcError):
     pass
+
+
+if __name__ == "__main__":
+    print(getDeviceList())
+    for device in getDeviceList():
+        print(UsbTmcDriver(device).getIDN())

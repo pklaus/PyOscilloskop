@@ -37,7 +37,6 @@ class TimeAxis:
     
     def getUnit(self):
         time = self._getTime()
-        print("Time599: ", time[599])
         if (time[599] < 1e-2):
             tUnit = "uS"
         elif (time[599] < 1):
