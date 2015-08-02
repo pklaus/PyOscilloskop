@@ -1,0 +1,59 @@
+body {
+  font: 12px sans-serif;
+}
+
+#scope {
+  font: 10px sans-serif;
+  width: 90%;
+  height: 100%;
+}
+
+path {
+  stroke-width: 1;
+  fill: none;
+}
+
+.data1 {
+  stroke: orange;
+}
+
+.data2 {
+  stroke: steelblue;
+}
+
+.axis {
+  shape-rendering: crispEdges;
+}
+
+.x.axis line, .y.axis line {
+  stroke: lightgrey;
+}
+
+.x.axis .minor, .y.axis .minor {
+  stroke-opacity: .5;
+}
+
+.x.axis path {
+  display: none;
+}
+
+.x.axis text {
+  font-size: 14;
+}
+
+.y.axis path {
+  fill: none;
+  stroke: #000;
+}
+
+.y.axis text {
+  font-size: 14;
+}
+
+.y.axisRight text {
+  fill: steelblue;
+}
+
+.y.axisLeft text {
+  fill: orange;
+}
