@@ -17,6 +17,8 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import time
+
 from . import rigolScopeChannel
 from . import timeAxis
 from .rigolDevice import RigolDevice, RigolError, RigolUsageError
@@ -55,7 +57,7 @@ class RigolScope(RigolDevice):
         self.channel2 = rigolScopeChannel.RigolScopeChannel(self, self.CHANNEL2);        
         
     def getName(self):
-        return self.dev.getIDN()
+        return self.dev.idn
 
     def getModel(self):
         return self.getName().split(",")[1]
@@ -74,15 +76,16 @@ class RigolScope(RigolDevice):
     
     def getScopeInformation(self, channel, command, readBytes):
         self.write(":" + channel + ":" + command)
+        if 'OFFS?' in command: time.sleep(0.05)
         return self.read(readBytes)
         
     def getScopeInformationFloat(self, channel, command):
-        rawScopeInformation = self.getScopeInformation(channel, command, 20)
+        rawScopeInformation = self.getScopeInformation(channel, command, 30)
         floatScopeInformation = float(rawScopeInformation)
         return floatScopeInformation
     
     def getScopeInformationInteger(self, channel, command):
-        rawScopeInformation = self.getScopeInformation(channel, command, 20)
+        rawScopeInformation = self.getScopeInformation(channel, command, 30)
         floatScopeInformation = int(rawScopeInformation)
         return floatScopeInformation
     

@@ -1,19 +1,19 @@
 #!/usr/bin/env python2
 # -*- encoding: UTF8 -*-
 
-from pyoscilloskop import RigolScope
-from pyoscilloskop import RigolError
-
 import sys
+import logging
 
-try:
-    scope = RigolScope('/dev/usbtmc0')
-except RigolError as e:
-    print(e)
-    sys.exit(1)
+from pyoscilloskop import RigolScope
 
 ## To get more debug output, do:
-#scope.debugLevel = 5
+#logging.basicConfig(level=logging.DEBUG)
+
+from universal_usbtmc.backends.linux_kernel import Instrument
+dev_name = '/dev/usbtmc0'
+device = Instrument(dev_name)
+
+scope = RigolScope(device)
 
 channel1Data = scope.getChannel1().getData();
 channel2Data = scope.getChannel2().getData();
@@ -22,4 +22,3 @@ print("{0} values received for channel 2.".format(len(channel2Data)))
 
 scope.reactivateControlButtons()
 
-scope = None

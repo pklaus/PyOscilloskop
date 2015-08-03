@@ -20,12 +20,18 @@ def main():
     parser.add_argument('-d', '--debug', action='store_true',
       help='Start in debug mode (with verbose HTTP error pages.')
     parser.add_argument('--scope-name', help='Name of the oscilloscope to display.')
+    parser.add_argument('--backend', default='linux_kernel', help='The backend to use')
     parser.add_argument('device', help='The /dev/usbtmc0 -like device name.')
     args = parser.parse_args()
 
+    logging.basicConfig(level=logging.DEBUG)
+
     if args.scope_name : DEFAULT_CONTEXT['scope_name'] = args.scope_name
 
-    api.install(RigolPlugin(args.device))
+    if args.backend not in ('linux_kernel', 'tcp_socket', 'python_usbtmc'):
+        parser.error('Please select a valid backend')
+
+    api.install(RigolPlugin(args.device, backend=args.backend))
     interface.mount('/api', api)
     app = interface
 

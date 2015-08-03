@@ -28,6 +28,8 @@ import matplotlib.pyplot as plot
 from pyoscilloskop import rigolScope
 from pyoscilloskop import RigolDevice, RigolError, RigolUsageError, RigolTimeoutError
 
+from universal_usbtmc import UsbtmcError, UsbtmcPermissionError, UsbtmcNoSuchFileError
+
 logging.basicConfig(level=logging.DEBUG)
 
 parser = argparse.ArgumentParser()
@@ -45,8 +47,20 @@ args = parser.parse_args()
 
 """Initialize our scope"""
 
+if args.device.startswith('/dev/usbtmc'):
+    from universal_usbtmc.backends.linux_kernel import Instrument
+else:
+    from universal_usbtmc.backends.tcp_socket import Instrument
+
 try:
-    scope = rigolScope.RigolScope(args.device)
+    device = Instrument(args.device)
+except UsbtmcError as e:
+    print('{0} {1}'.format(e.__class__.__name__, e))
+    sys.exit(1)
+
+
+try:
+    scope = rigolScope.RigolScope(device)
 except RigolError as e:
     print(e)
     sys.exit(1)

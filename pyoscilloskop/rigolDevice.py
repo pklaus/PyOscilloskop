@@ -21,8 +21,6 @@ import time
 import errno
 import logging
 
-from universal_usbtmc import UsbtmcPermissionError, UsbtmcNoSuchFileError
-from universal_usbtmc.backends.linux_kernel import Instrument
 
 logger = logging.getLogger(__name__)
 
@@ -35,17 +33,8 @@ class RigolDevice(object):
        a DS1000 series oscilloscope
        or a DG1022 function generator."""
     def __init__(self, device):
-        self.device = device
-        try:
-            self.dev = Instrument(self.device)
-        except UsbtmcPermissionError:
-            raise RigolError( "Please adjust the permissions of the file " \
-              "%s to allow regular users to read and write to it ('chmod 777 %s') " \
-              "or run this software as superuser (not recommended)." % (self.device, self.device) )
-        except UsbtmcNoSuchFileError:
-            raise RigolError( "You tried to access the USBTMC device %s which doesn't "\
-              "exist in your system. Make sure it's plugged in and detected by your " \
-              "operating sytem by running `dmesg`." % self.device )
+        """ device needs to be a universal_usbtmc.Instrument """
+        self.dev = device
 
     def write(self, command):
         """Send a command directly to the device"""

@@ -8,6 +8,8 @@ import logging
 from pyoscilloskop import RigolScope
 from pyoscilloskop import RigolError
 
+from universal_usbtmc import UsbtmcError, UsbtmcPermissionError, UsbtmcNoSuchFileError
+
 from bottle import Bottle, route, run, post, get, request, response, redirect, error, abort, static_file, TEMPLATE_PATH, Jinja2Template, url
 from bottle import jinja2_template as template, jinja2_view as view
 
@@ -41,22 +43,28 @@ class RigolPlugin(object):
     name = 'rigol'
     api = 2
 
-    def __init__(self, usbtmc_file=None, keyword='scope'):
-         self.usbtmc_file = usbtmc_file
+    def __init__(self, device_name, backend='linux_kernel', keyword='scope'):
+         self.device_name = device_name
+         self.backend = backend
          self.keyword = keyword
 
     def setup(self, app):
+        if self.backend == 'linux_kernel':
+            from universal_usbtmc.backends.linux_kernel import Instrument
+        elif self.backend == 'tcp_socket':
+            from universal_usbtmc.backends.tcp_socket import Instrument
         try:
-            self.scope = RigolScope(self.usbtmc_file)
-        except RigolError as e:
-            logger.error(e)
+            device = Instrument(self.device_name)
+            self.scope = RigolScope(device)
+        except (UsbtmcError, RigolError) as e:
+            raise PluginError("Couldn't connect to the scope: {0} {1}".format(e.__class__.name, e))
         ## To get more debug output, do:
-        #scope.debugLevel = 5
+        #logging.basicConfig(level=logging.DEBUG)
         for other in app.plugins:
             if not isinstance(other, RigolPlugin): continue
             if other.keyword == self.keyword:
                 raise PluginError("Found another Rigol plugin with "\
-                "conflicting settings (non-unique keyword).")
+                      "conflicting settings (non-unique keyword).")
 
     def apply(self, callback, context):
         keyword = self.keyword

@@ -56,8 +56,7 @@ class RigolFunctionGenerator(RigolDevice):
         RigolDevice.__init__(self, device)
         
         # check identification
-        idn = self.dev.getIDN()
-        info = RigolFunctionGenerator.validate('*IDN?', idn)
+        info = RigolFunctionGenerator.validate('*IDN?', self.dev.idn)
         print("Discovered a %s from %s." % (info["model"], info["manufacturer"]))
         self.lock()
 

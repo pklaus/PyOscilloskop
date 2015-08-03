@@ -25,96 +25,94 @@
     d3.json("/api/capture", function(error, json) {
 
       var timeData = json.timeData;
-      var data1 = json.channel1Data;
-      var data2 = json.channel2Data;
 
       console.log('xmin: ' + d3.min(timeData) + ' xmax: ' + d3.max(timeData));
       var x  = d3.scale.linear().domain([d3.min(json.timeData), d3.max(json.timeData)]).range([0, w]);
+
+      var data1 = json.channel1Data;
       //var y1 = d3.scale.linear().domain([d3.min(data1), d3.max(data1)]).range([h, 0]);
-      //var y2 = d3.scale.linear().domain([d3.min(data2), d3.max(data2)]).range([h, 0]);
       //var y1 = d3.scale.linear().domain([-0.05, 0.05]).range([h, 0]);
+      var y1 = d3.scale.linear().domain([-json.channel1Scale*4-json.channel1Offset,json.channel1Scale*4-json.channel1Offset]).range([h, 0]);
+
+      var data2 = json.channel2Data;
       //var y2 = d3.scale.linear().domain([-0.05, 0.05]).range([h, 0]);
-      console.log(json.channel1Offset)
-      //var y1 = d3.scale.linear().domain([-json.channel1Scale*4+json.channel1Offset,json.channel1Scale*4+json.channel1Offset]).range([h, 0]);
-      var y1 = d3.scale.linear().domain([-json.channel1Scale*4,json.channel1Scale*4]).range([h, 0]);
-      var y2 = d3.scale.linear().domain([-json.channel2Scale*4,json.channel2Scale*4]).range([h, 0]);
+      //var y2 = d3.scale.linear().domain([d3.min(data2), d3.max(data2)]).range([h, 0]);
+      var y2 = d3.scale.linear().domain([-json.channel2Scale*4-json.channel2Offset,json.channel2Scale*4-json.channel2Offset]).range([h, 0]);
 
       var line1 = d3.svg.line()
         .x(function(d,i) { 
-          console.log('Plotting X1 value for data point: ' + d + ' using index: ' + i + ' to be at: ' + x(i) + ' using our xScale.');
+          //console.log('Plotting X1 value for data point: ' + d + ' using index: ' + i + ' to be at: ' + x(i) + ' using our xScale.');
           return x(timeData[i]); 
-          //return i;
         })
         .y(function(d) { 
-          console.log('Plotting Y1 value for data point: ' + d + ' to be at: ' + y1(d) + " using our y1Scale.");
+          //console.log('Plotting Y1 value for data point: ' + d + ' to be at: ' + y1(d) + " using our y1Scale.");
           return y1(d); 
         })
         
       var line2 = d3.svg.line()
         .x(function(d,i) { 
-          console.log('Plotting X2 value for data point: ' + d + ' using index: ' + i + ' to be at: ' + x(i) + ' using our xScale.');
-          //return x(i); 
+          //console.log('Plotting X2 value for data point: ' + d + ' using index: ' + i + ' to be at: ' + x(i) + ' using our xScale.');
           return x(timeData[i]); 
         })
         .y(function(d) { 
-          console.log('Plotting Y2 value for data point: ' + d + ' to be at: ' + y2(d) + " using our y2Scale.");
+          //console.log('Plotting Y2 value for data point: ' + d + ' to be at: ' + y2(d) + " using our y2Scale.");
           return y2(d); 
         })
 
-        // Add an SVG element with the desired dimensions and margin.
-        var graph = d3.select("#scope").append("svg:svg")
-              .attr("width", w + m[1] + m[3])
-              .attr("height", h + m[0] + m[2])
-            .append("svg:g")
-              .attr("transform", "translate(" + m[3] + "," + m[0] + ")");
+      // Add an SVG element with the desired dimensions and margin.
+      var graph = d3.select("#scope").append("svg:svg")
+            .attr("width", w + m[1] + m[3])
+            .attr("height", h + m[0] + m[2])
+          .append("svg:g")
+            .attr("transform", "translate(" + m[3] + "," + m[0] + ")");
 
-        // create xAxis
-        var xAxis = d3.svg.axis().scale(x).tickSize(-h).tickSubdivide(true);
-        // Add the x-axis.
-        graph.append("svg:g")
-              .attr("class", "x axis")
-              .attr("transform", "translate(0," + h + ")")
-              .call(xAxis)
-              .append("text")
-              .attr("y", 40)
-              .attr("x", w/2)
-              .style("text-anchor", "middle")
-              .text("Time [" + json.timeAxisUnit + "]");
-
-
-        // create left yAxis
-        var yAxisLeft = d3.svg.axis().scale(y1).ticks(9).tickSize(-w).tickSubdivide(true).orient("left");
-        // Add the y-axis to the left
-        graph.append("svg:g")
-              .attr("class", "y axis axisLeft")
-              .attr("transform", "translate(0,0)")
-              .call(yAxisLeft)
-              .append("text")
-              .attr("transform", "rotate(-90)")
-              .attr("y", -55)
-              .attr("x", -h/2)
-              .style("text-anchor", "middle")
-              .text("Channel 1");
+      // create xAxis
+      var xAxis = d3.svg.axis().scale(x).tickSize(-h).tickSubdivide(true);
+      // Add the x-axis.
+      graph.append("svg:g")
+            .attr("class", "x axis")
+            .attr("transform", "translate(0," + h + ")")
+            .call(xAxis)
+            .append("text")
+            .attr("y", 40)
+            .attr("x", w/2)
+            .style("text-anchor", "middle")
+            .text("Time [" + json.timeAxisUnit + "]");
 
 
-          // create right yAxis
-          var yAxisRight = d3.svg.axis().scale(y2).ticks(9).tickSize(-w).orient("right");
-          // Add the y-axis to the right
-          graph.append("svg:g")
-              .attr("class", "y axis axisRight")
-              .attr("transform", "translate(" + w + ",0)")
-              .call(yAxisRight)
-              .append("text")
-              .attr("transform", "rotate(-90)")
-              .attr("y", 70)
-              .attr("x", -h/2)
-              .style("text-anchor", "middle")
-              .text("Channel 2");
-        
-        // add lines
-        // do this AFTER the axes above so that the line is above the tick-lines
-          graph.append("svg:path").attr("d", line1(data1)).attr("class", "data1");
-          graph.append("svg:path").attr("d", line2(data2)).attr("class", "data2");
+      // create left yAxis
+      var yAxisLeft = d3.svg.axis().scale(y1).ticks(9).tickSize(-w).tickSubdivide(true).orient("left");
+      // Add the y-axis to the left
+      graph.append("svg:g")
+            .attr("class", "y axis axisLeft")
+            .attr("transform", "translate(0,0)")
+            .call(yAxisLeft)
+            .append("text")
+            .attr("transform", "rotate(-90)")
+            .attr("y", -55)
+            .attr("x", -h/2)
+            .style("text-anchor", "middle")
+            .text("Channel 1");
+
+
+      // create right yAxis
+      var yAxisRight = d3.svg.axis().scale(y2).ticks(9).tickSize(-w).orient("right");
+      // Add the y-axis to the right
+      graph.append("svg:g")
+          .attr("class", "y axis axisRight")
+          .attr("transform", "translate(" + w + ",0)")
+          .call(yAxisRight)
+          .append("text")
+          .attr("transform", "rotate(-90)")
+          .attr("y", 70)
+          .attr("x", -h/2)
+          .style("text-anchor", "middle")
+          .text("Channel 2");
+      
+      // add lines
+      // do this AFTER the axes above so that the line is above the tick-lines
+        graph.append("svg:path").attr("d", line1(data1)).attr("class", "data1");
+        graph.append("svg:path").attr("d", line2(data2)).attr("class", "data2");
     });
 
 

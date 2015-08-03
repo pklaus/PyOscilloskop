@@ -39,25 +39,15 @@ class RigolScopeChannel:
         self.rigolScope.strategy.getData(self.rigolScope, self.channelName)
         
         rawdata = self.rigolScope.read_raw(9000)
+        # remove first 10 bytes
+        rawdata = rawdata[10:]
         data = numpy.frombuffer(rawdata, 'B')
 
-        # Walk through the data, and map it to actual voltages
-        # First invert the data
-        data = data * -1 + 255
-        
-        voltscale = self.getVoltageScale();
-        voltoffset = self.getVoltageOffset();
-        
-        #print("Offset: ", voltoffset/voltscale*25)
-        
-        # Now, we know from experimentation that the scope display range is actually
-        # 30-229.  So shift by 130 - the voltage offset in counts, then scale to
-        # get the actual voltage.
-        data = (data - 130.0 - voltoffset/voltscale*25) / 25 * voltscale
-        
-        #Sets the voltage offset
-        data = data + voltoffset/voltscale
-        
-        data = data[10:]
+        #assert data.min() >= 15 and data.max() <= 240
+
+        voltscale = self.getVoltageScale()
+        voltoffset = self.getVoltageOffset()
+
+        data = (240. - data) * voltscale / 25 - voltoffset - voltscale * 4.6
         
         return data
