@@ -18,6 +18,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import numpy
+import time
 
 #This class has function to get informations about one channel. Instances of these class could be accessed by the class Rigol scope
 class RigolScopeChannel:
@@ -34,20 +35,23 @@ class RigolScopeChannel:
     
     def isChannelActive(self):
         return self.rigolScope.getScopeInformationInteger(self.channelName, self.rigolScope.GET_DISPLAY_ACTIVE) == 1
-        
-    def getData(self):
+
+    def capture(self):
         self.rigolScope.strategy.getData(self.rigolScope, self.channelName)
-        
         rawdata = self.rigolScope.read_raw(9000)
+        time.sleep(50E-3)
         # remove first 10 bytes
         rawdata = rawdata[10:]
         data = numpy.frombuffer(rawdata, 'B')
-
         #assert data.min() >= 15 and data.max() <= 240
-
         voltscale = self.getVoltageScale()
         voltoffset = self.getVoltageOffset()
-
         data = (240. - data) * voltscale / 25 - voltoffset - voltscale * 4.6
-        
-        return data
+        ret = {}
+        ret['volt_samples'] = data
+        ret['volt_offset'] = voltoffset
+        ret['volt_scale'] = voltscale
+        return ret
+
+    def getData(self):
+        return self.capture()['volt_samples']

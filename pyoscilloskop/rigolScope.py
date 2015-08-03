@@ -76,7 +76,6 @@ class RigolScope(RigolDevice):
     
     def getScopeInformation(self, channel, command, readBytes):
         self.write(":" + channel + ":" + command)
-        if 'OFFS?' in command: time.sleep(0.05)
         return self.read(readBytes)
         
     def getScopeInformationFloat(self, channel, command):

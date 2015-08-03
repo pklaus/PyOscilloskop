@@ -18,13 +18,14 @@ def main():
     parser.add_argument('-6', '--ipv6', action='store_true',
       help='Listen to incoming connections via IPv6 instead of IPv4.')
     parser.add_argument('-d', '--debug', action='store_true',
-      help='Start in debug mode (with verbose HTTP error pages.')
+      help='Start in debug mode.')
     parser.add_argument('--scope-name', help='Name of the oscilloscope to display.')
     parser.add_argument('--backend', default='linux_kernel', help='The backend to use')
     parser.add_argument('device', help='The /dev/usbtmc0 -like device name.')
     args = parser.parse_args()
 
-    logging.basicConfig(level=logging.DEBUG)
+    if args.debug:
+        logging.basicConfig(level=logging.DEBUG)
 
     if args.scope_name : DEFAULT_CONTEXT['scope_name'] = args.scope_name
 
@@ -35,16 +36,10 @@ def main():
     interface.mount('/api', api)
     app = interface
 
-    if args.debug and args.ipv6:
-        args.error('You cannot use IPv6 in debug mode, sorry.')
-    if args.debug:
-        run(app, host='0.0.0.0', port=args.port, debug=True, reloader=True)
+    if args.ipv6:
+        app.run(host='::', server='cherrypy', port=args.port)
     else:
-        if args.ipv6:
-            # CherryPy is Python3 ready and has IPv6 support:
-            app.run(host='::', server='cherrypy', port=args.port)
-        else:
-            app.run(host='0.0.0.0', server='cherrypy', port=args.port)
+        app.run(host='0.0.0.0', server='cherrypy', port=args.port, debug=True)
 
 if __name__ == '__main__':
     main()

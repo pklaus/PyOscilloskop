@@ -82,6 +82,8 @@ class RigolPlugin(object):
                 rv = callback(*args, **kwargs)
             except RigolError as e:
                 raise HTTPError(500, "Rigol Plugin Error", e)
+            except UsbtmcError as e:
+                raise HTTPError(500, "USBTMC Error in Plugin ", e)
             return rv
 
         # Replace the route callback with the wrapped one.
@@ -97,15 +99,15 @@ def current_trace(scope):
     ret_dict = {}
     try:
         channel_1 = scope.getChannel1()
-        channel_1_data = channel_1.getData()
-        ret_dict['channel1Data'] = channel_1_data.tolist()
-        ret_dict['channel1Scale'] = channel_1.getVoltageScale()
-        ret_dict['channel1Offset'] = channel_1.getVoltageOffset()
+        channel_1_data = channel_1.capture()
+        ret_dict['channel1Data'] =   channel_1_data['volt_samples'].tolist()
+        ret_dict['channel1Scale'] =  channel_1_data['volt_scale']
+        ret_dict['channel1Offset'] = channel_1_data['volt_offset']
         channel_2 = scope.getChannel2()
-        channel_2_data = channel_2.getData()
-        ret_dict['channel2Data'] = channel_2_data.tolist()
-        ret_dict['channel2Scale'] = channel_2.getVoltageScale()
-        ret_dict['channel2Offset'] = channel_2.getVoltageOffset()
+        channel_2_data = channel_2.capture()
+        ret_dict['channel2Data'] =   channel_2_data['volt_samples'].tolist()
+        ret_dict['channel2Scale'] =  channel_2_data['volt_scale']
+        ret_dict['channel2Offset'] = channel_2_data['volt_offset']
         time_axis = scope.getTimeAxis()
         time_values = time_axis.getTimeAxis()
         ret_dict['timeData'] = time_values.tolist()
