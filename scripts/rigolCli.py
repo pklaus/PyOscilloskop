@@ -84,7 +84,7 @@ if args.information:
 """You have to reactivate the keys on the scope after every access over the usb interface"""
 scope.reactivateControlButtons()
 
-def fillPlot(options):
+def fill_plot(options):
     channel1Data = scope.getChannel1().getData();
     #channel1Data = channel1Data.tolist()
     
@@ -109,8 +109,8 @@ def fillPlot(options):
     plt.xlabel("Time (" + time.getUnit() + ")")
     plt.xlim(timeAxis[0], timeAxis[599])
 
-if args.save_plot != None or args.plot != None:
-    fillPlot(args)
+if args.save_plot or not args.hide_plot:
+    fill_plot(args)
     
 if args.restart:
     scope.run()

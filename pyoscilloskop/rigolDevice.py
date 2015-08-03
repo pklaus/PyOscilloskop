@@ -18,61 +18,34 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import time
-import errno
 import logging
-
 
 logger = logging.getLogger(__name__)
 
 class RigolDevice(object):
-    ## defaults for device dependent settings
-    SLEEP_AFTER_WRITE = 0.01 # ← needed to give the device some time to commit changes
-    SLEEP_MS_PER_CHAR = 0.2 # ← needed for long commands
-
     """Class to control a Rigol device such as
        a DS1000 series oscilloscope
        or a DG1022 function generator."""
+
     def __init__(self, device):
         """ device needs to be a universal_usbtmc.Instrument """
         self.dev = device
 
-    def write(self, command):
+    def write(self, *args, **kwargs):
         """Send a command directly to the device"""
-        #logger.debug("RIGOL_WRITE " + str(command) )
-        try:
-            self.dev.write(command)
-        except OSError as e:
-            raise RigolError("Couldn't communicate with the scope: " + str(e))
-        time.sleep( self.SLEEP_AFTER_WRITE )
-        if len(command) > 20:
-            time.sleep( self.SLEEP_MS_PER_CHAR * 0.001 * len(command) )
+        self.dev.write(*args, **kwargs)
  
-    def read(self, length = 4000):
+    def read(self, *args, **kwargs):
         """Read text data from the device"""
-        binary_response = self.read_raw(length)
-        try:
-            return binary_response.decode('ascii')
-        except Exception as e:
-            raise RigolError('Could not decode this message:\n' + str(e))
+        return self.dev.read(*args, **kwargs)
 
-
-    def read_raw(self, length = 4000):
+    def read_raw(self, *args, **kwargs):
         """Read binary data from the device"""
-        try:
-            response = self.dev.read_raw(length)
-        except OSError as e:
-            if e.errno == errno.ETIMEDOUT: raise RigolTimeoutError()
-            else: raise e
-        #logger.debug("RIGOL_READ " + str(response))
-        return response
+        return self.dev.read_raw(*args, **kwargs)
 
     def reset(self):
         """Reset the device"""
-        self.dev.sendReset()
-
-    def __del__(self):
-        try: self.dev = None
-        except: pass
+        self.dev.write("*RST")
 
 class RigolError(Exception):
     pass
