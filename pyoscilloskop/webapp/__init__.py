@@ -10,7 +10,7 @@ from pyoscilloskop import RigolError
 
 from universal_usbtmc import UsbtmcError, UsbtmcPermissionError, UsbtmcNoSuchFileError
 
-from bottle import Bottle, route, run, post, get, request, response, redirect, error, abort, static_file, TEMPLATE_PATH, Jinja2Template, url
+from bottle import Bottle, route, run, post, get, request, response, redirect, error, abort, static_file, TEMPLATE_PATH, Jinja2Template, url, PluginError
 from bottle import jinja2_template as template, jinja2_view as view
 
 logger = logging.getLogger(__name__)
@@ -57,7 +57,7 @@ class RigolPlugin(object):
             device = Instrument(self.device_name)
             self.scope = RigolScope(device)
         except (UsbtmcError, RigolError) as e:
-            raise PluginError("Couldn't connect to the scope: {0} {1}".format(e.__class__.name, e))
+            raise PluginError("Couldn't connect to the scope: {0} {1}".format(e.__class__.__name__, e))
         ## To get more debug output, do:
         #logging.basicConfig(level=logging.DEBUG)
         for other in app.plugins:
