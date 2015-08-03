@@ -58,8 +58,6 @@ class RigolPlugin(object):
             self.scope = RigolScope(device)
         except (UsbtmcError, RigolError) as e:
             raise PluginError("Couldn't connect to the scope: {0} {1}".format(e.__class__.__name__, e))
-        ## To get more debug output, do:
-        #logging.basicConfig(level=logging.DEBUG)
         for other in app.plugins:
             if not isinstance(other, RigolPlugin): continue
             if other.keyword == self.keyword:
