@@ -38,7 +38,7 @@ class RigolScopeChannel:
 
     def capture(self):
         self.rigolScope.strategy.getData(self.rigolScope, self.channelName)
-        rawdata = self.rigolScope.read_raw(9000, wait_long=14.)
+        rawdata = self.rigolScope.read_raw(9000, timeout=14.)
         time.sleep(50E-3)
         # remove first 10 bytes
         rawdata = rawdata[10:]
