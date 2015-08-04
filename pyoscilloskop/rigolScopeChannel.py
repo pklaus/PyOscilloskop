@@ -37,20 +37,24 @@ class RigolScopeChannel:
         return self.rigolScope.getScopeInformationInteger(self.channelName, self.rigolScope.GET_DISPLAY_ACTIVE) == 1
 
     def capture(self):
+
+        voltscale = self.getVoltageScale()
+        voltoffset = self.getVoltageOffset()
+
         self.rigolScope.strategy.getData(self.rigolScope, self.channelName)
         rawdata = self.rigolScope.read_raw(9000, timeout=14.)
-        time.sleep(50E-3)
+        time.sleep(250E-3)
         # remove first 10 bytes
         rawdata = rawdata[10:]
         data = numpy.frombuffer(rawdata, 'B')
         #assert data.min() >= 15 and data.max() <= 240
-        voltscale = self.getVoltageScale()
-        voltoffset = self.getVoltageOffset()
         data = (240. - data) * voltscale / 25 - voltoffset - voltscale * 4.6
+
         ret = {}
         ret['volt_samples'] = data
         ret['volt_offset'] = voltoffset
         ret['volt_scale'] = voltscale
+
         return ret
 
     def getData(self):
