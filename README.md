@@ -30,12 +30,14 @@ Read the [universal_usbtmc README file](https://github.com/pklaus/universal_usbt
 Usage
 -----
 
-You can either use the Python package to automate measurements on your own or use the tools that ship
-with this software:
+You can either import the modules found in this Python package
+in your own scripts to automate control / measurements.
 
-* `pyoscilloskop-cli` - A CLI tool for the scopes
+Or use the tools that ship with this software:
+
+* `pyoscilloskop-cli` - A CLI tool for the scopes  
   Captures the current waveforms and displays them
-  with Matplotlib (and/or saves them to an image file.
+  with Matplotlib and/or saves them to an image file.
 * `pyoscilloskop-web` - A web GUI for the scopes  
   Starts a web server allowing to display waveforms
   in the browser.
