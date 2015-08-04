@@ -38,6 +38,8 @@ class DS2000Strategy(ScopeStrategy):
         scope.write(":WAV:DATA?")
 
 class RigolScope(RigolDevice):
+    """Class to control a Rigol DS1000/DS2000 series oscilloscope"""
+
     CHANNEL1 = "CHAN1"
     CHANNEL2 = "CHAN2"
     GET_TIME_SCALE = "TIM"
@@ -48,7 +50,6 @@ class RigolScope(RigolDevice):
     strategies["DS1"] = DS1000Strategy()
     strategies["DS2"] = DS2000Strategy()
 
-    """Class to control a Rigol DS1000 series oscilloscope"""
     def __init__(self, device = None):
 
         RigolDevice.__init__(self, device)

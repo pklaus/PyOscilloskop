@@ -53,7 +53,6 @@ if args.debug:
 
 """Initialize our scope"""
 
-
 backend = import_backend(args.backend)
 
 try:
@@ -61,7 +60,6 @@ try:
 except UsbtmcError as e:
     print('{0} {1}'.format(e.__class__.__name__, e))
     sys.exit(1)
-
 
 try:
     scope = rigolScope.RigolScope(device)
