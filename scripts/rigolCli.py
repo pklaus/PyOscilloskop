@@ -42,10 +42,14 @@ parser.add_argument("--save-plot", "-s", metavar="filename", help="Saves the plo
 parser.add_argument("--title", "-t", metavar="title", help="Set the title of the plot")
 parser.add_argument("--hide-date", "-d", action="store_true", default=False, help="Hides the date in the plot")
 parser.add_argument("--restart", "-r", action="store_true", default=False, help="Restart require after plot")
+parser.add_argument("--debug", action="store_true", help="Enable debugging output")
 parser.add_argument("--backend", default="linux_kernel", help="The universal_usbtmc backend to use.")
 parser.add_argument("device", default="/dev/usbtmc0", nargs="?", help="The usbtmc device to connect to.")
 
 args = parser.parse_args()
+
+if args.debug:
+    logging.basicConfig(level=logging.DEBUG)
 
 """Initialize our scope"""
 
