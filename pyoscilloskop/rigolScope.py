@@ -53,6 +53,10 @@ class RigolScope(RigolDevice):
     def __init__(self, device = None):
 
         RigolDevice.__init__(self, device)
+        try:
+            device.message_delay = 0.02
+        except:
+            pass
         self.strategy = RigolScope.strategies[self.getModel()[:3]]
         self.channel1 = rigolScopeChannel.RigolScopeChannel(self, self.CHANNEL1);
         self.channel2 = rigolScopeChannel.RigolScopeChannel(self, self.CHANNEL2);        
