@@ -43,7 +43,7 @@ class RigolScopeChannel:
 
         self.rigolScope.strategy.getData(self.rigolScope, self.channelName)
         rawdata = self.rigolScope.read_raw(9000, timeout=14.)
-        time.sleep(250E-3)
+        time.sleep(50E-3)
         # remove first 10 bytes
         rawdata = rawdata[10:]
         data = numpy.frombuffer(rawdata, 'B')
