@@ -5,6 +5,7 @@ import inspect
 import logging
 import argparse
 
+from universal_usbtmc import import_backend
 from pyoscilloskop.webapp import RigolPlugin, api, interface, DEFAULT_CONTEXT 
 
 logger = logging.getLogger(__name__)
@@ -21,7 +22,7 @@ def main():
       help='Start in debug mode.')
     parser.add_argument('--scope-name', help='Name of the oscilloscope to display.')
     parser.add_argument('--backend', default='linux_kernel', help='The backend to use')
-    parser.add_argument('device', help='The /dev/usbtmc0 -like device name.')
+    parser.add_argument('device', help='The device name. Depends on the backend.')
     args = parser.parse_args()
 
     if args.debug:
@@ -29,7 +30,9 @@ def main():
 
     if args.scope_name : DEFAULT_CONTEXT['scope_name'] = args.scope_name
 
-    if args.backend not in ('linux_kernel', 'tcp_socket', 'python_usbtmc'):
+    try:
+        import_backend(args.backend)
+    except:
         parser.error('Please select a valid backend')
 
     api.install(RigolPlugin(args.device, backend=args.backend))

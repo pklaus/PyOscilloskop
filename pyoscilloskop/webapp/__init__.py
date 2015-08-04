@@ -8,6 +8,7 @@ import logging
 from pyoscilloskop import RigolScope
 from pyoscilloskop import RigolError
 
+from universal_usbtmc import import_backend
 from universal_usbtmc import UsbtmcError, UsbtmcPermissionError, UsbtmcNoSuchFileError
 
 from bottle import Bottle, route, run, post, get, request, response, redirect, error, abort, static_file, TEMPLATE_PATH, Jinja2Template, url, PluginError
@@ -49,12 +50,9 @@ class RigolPlugin(object):
          self.keyword = keyword
 
     def setup(self, app):
-        if self.backend == 'linux_kernel':
-            from universal_usbtmc.backends.linux_kernel import Instrument
-        elif self.backend == 'tcp_socket':
-            from universal_usbtmc.backends.tcp_socket import Instrument
+        backend = import_backend(self.backend)
         try:
-            device = Instrument(self.device_name)
+            device = backend.Instrument(self.device_name)
             self.scope = RigolScope(device)
         except (UsbtmcError, RigolError) as e:
             raise PluginError("Couldn't connect to the scope: {0} {1}".format(e.__class__.__name__, e))

@@ -28,6 +28,7 @@ import matplotlib.pyplot as plt
 from pyoscilloskop import rigolScope
 from pyoscilloskop import RigolDevice, RigolError, RigolUsageError, RigolTimeoutError
 
+from universal_usbtmc import import_backend
 from universal_usbtmc import UsbtmcError, UsbtmcPermissionError, UsbtmcNoSuchFileError
 
 logging.basicConfig(level=logging.DEBUG)
@@ -41,19 +42,18 @@ parser.add_argument("--save-plot", "-s", metavar="filename", help="Saves the plo
 parser.add_argument("--title", "-t", metavar="title", help="Set the title of the plot")
 parser.add_argument("--hide-date", "-d", action="store_true", default=False, help="Hides the date in the plot")
 parser.add_argument("--restart", "-r", action="store_true", default=False, help="Restart require after plot")
+parser.add_argument("--backend", default="linux_kernel", help="The universal_usbtmc backend to use.")
 parser.add_argument("device", default="/dev/usbtmc0", nargs="?", help="The usbtmc device to connect to.")
 
 args = parser.parse_args()
 
 """Initialize our scope"""
 
-if args.device.startswith('/dev/usbtmc'):
-    from universal_usbtmc.backends.linux_kernel import Instrument
-else:
-    from universal_usbtmc.backends.tcp_socket import Instrument
+
+backend = import_backend(args.backend)
 
 try:
-    device = Instrument(args.device)
+    device = backend.Instrument(args.device)
 except UsbtmcError as e:
     print('{0} {1}'.format(e.__class__.__name__, e))
     sys.exit(1)
