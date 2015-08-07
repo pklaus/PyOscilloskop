@@ -1,7 +1,7 @@
 
-from .rigolDevice import RigolDevice
-from .rigolDevice import RigolError, RigolUsageError, RigolTimeoutError
+from .rigol_device import RigolDevice
+from .rigol_device import RigolError, RigolUsageError, RigolTimeoutError
 
-from .rigolScope import RigolScope
-from .rigolFG import RigolFunctionGenerator
+from .rigol_scope import RigolScope
+from .rigol_function_generator import RigolFunctionGenerator
 

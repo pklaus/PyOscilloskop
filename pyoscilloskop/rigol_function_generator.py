@@ -21,7 +21,7 @@ import time
 import re
 from math import sin
 
-from .rigolDevice import RigolDevice, RigolError, RigolUsageError, RigolTimeoutError
+from .rigol_device import RigolDevice, RigolError, RigolUsageError, RigolTimeoutError
 
 # The class RigolFunctionGenerator is able to control the
 # function generator Rigol DG1022. Read more on
@@ -62,9 +62,9 @@ class RigolFunctionGenerator(RigolDevice):
 
     def __del__(self):
         try:
-            if self.debugLevel > 0:
+            if self.debug_level > 0:
                 ## Get errors from the device and print them before quitting the program.
-                errors = self.clearErrors()
+                errors = self.clear_errors()
                 if errors:
                     print('The DG1022 reported problems:')
                     for error in errors: print('"%s" (error number %d)' % (error[1], error[0]))
@@ -81,7 +81,7 @@ class RigolFunctionGenerator(RigolDevice):
         ## reactivate the front panel knobs (manual p. 2-65)
         self.write("SYSTem:LOCal")
 
-    def clearError(self):
+    def clear_error(self):
         """ Fetches error messages from the device and clears them from the queue.
 
           Some known error messages:
@@ -99,29 +99,29 @@ class RigolFunctionGenerator(RigolDevice):
         response = RigolFunctionGenerator.validate("SYSTem:ERRor?", response)
         return (int(response['errno']), response['errdesc'])
 
-    def clearErrors(self):
-        error = self.clearError()
+    def clear_errors(self):
+        error = self.clear_error()
         if not error: return None
         errors = []
         while error:
             errors.append(error)
-            error = self.clearError()
+            error = self.clear_error()
         return errors
 
-    def setDisplayLuminance(self, luminance = 5):
+    def set_display_luminance(self, luminance = 5):
         ## Display backlight brightness (manual p. 2-69)
         ## The manual says the values can be between 0 and 31, but 0 seems to be invalid.
         if luminance not in range(1,32):
             raise RigolUsageError("The display luminance has to be in the limits of 1-31!")
         self.write("DISPlay:LUMInance %d" % luminance)
 
-    def setDisplayContrast(self, contrast = 5):
+    def set_display_contrast(self, contrast = 5):
         ## Display contrast (manual p. 2-69)
         if contrast not in range(0,32):
             raise RigolUsageError("The display contrast has to be in the limits of 0-31!")
         self.write("DISPlay:CONTRAST %d" % contrast)
 
-    def setClockSource(self, internal = True):
+    def set_clock_source(self, internal = True):
         """ Set the clock source of the function generator
           either to internal or to external.
           When setting to the external source,
@@ -129,7 +129,7 @@ class RigolFunctionGenerator(RigolDevice):
         self.write("SYSTem:CLKSRC " + ("INT" if internal else "EXT") )
 
     def activate(self, channel=1):
-        channel = self.validateChannelNumber(channel)
+        channel = self.validate_channel_number(channel)
         self.write("OUTP%s ON" % channel)
 
     def arbitrary(self, sequence, frequency, channel=1, voltage_high=4, voltage_low=-4):
@@ -199,7 +199,7 @@ class RigolFunctionGenerator(RigolDevice):
         return seq
 
     @staticmethod
-    def getSin(samples, periods = 1):
+    def get_sin(samples, periods = 1):
         ## create a list containing  0, 1, 2, ... , samples-1
         sequence = range(0,samples)
         ## rescale the list to values from 0 to 1
@@ -209,7 +209,7 @@ class RigolFunctionGenerator(RigolDevice):
         return sequence
     
     @staticmethod
-    def getSinc(samples, periods = 10):
+    def get_sinc(samples, periods = 10):
         ## create a list containing  -samples/2, -samples/2+1, ..., -1, 0, 1, ... , samples/2-2, samples/2-1
         sequence = range(-samples/2,samples/2)
         ## rescale the list to values from -0.5 to .5

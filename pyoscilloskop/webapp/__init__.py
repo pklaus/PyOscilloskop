@@ -94,23 +94,23 @@ interface = Bottle()
 def current_trace(scope):
     ret_dict = {}
     try:
-        time_axis = scope.getTimeAxis()
-        time_values = time_axis.getTimeAxis()
+        time_axis = scope.get_time_axis()
+        time_values = time_axis.get_time_axis()
         ret_dict['timeData'] = time_values.tolist()
         ret_dict['timeAxisMin'] = time_values.min()
         ret_dict['timeAxisMax'] = time_values.max()
         ret_dict['timeAxisUnit'] = time_axis.getUnit()
-        channel_1 = scope.getChannel1()
+        channel_1 = scope.get_channel_1()
         channel_1_data = channel_1.capture()
         ret_dict['channel1Data'] =   channel_1_data['volt_samples'].tolist()
         ret_dict['channel1Scale'] =  channel_1_data['volt_scale']
         ret_dict['channel1Offset'] = channel_1_data['volt_offset']
-        channel_2 = scope.getChannel2()
+        channel_2 = scope.get_channel_2()
         channel_2_data = channel_2.capture()
         ret_dict['channel2Data'] =   channel_2_data['volt_samples'].tolist()
         ret_dict['channel2Scale'] =  channel_2_data['volt_scale']
         ret_dict['channel2Offset'] = channel_2_data['volt_offset']
-        scope.reactivateControlButtons()
+        scope.reactivate_control_buttons()
     except Exception as e:
         abort(500, str(type(e)))
     return ret_dict

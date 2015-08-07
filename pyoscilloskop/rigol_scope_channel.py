@@ -23,26 +23,26 @@ import time
 #This class has function to get informations about one channel. Instances of these class could be accessed by the class Rigol scope
 class RigolScopeChannel:
     
-    def __init__(self, rigolScope, channelName):
-        self.rigolScope = rigolScope
-        self.channelName = channelName
+    def __init__(self, scope, channel_name):
+        self.scope = scope
+        self.channel_name = channel_name
         
-    def getVoltageScale(self):
-        return self.rigolScope.getScopeInformationFloat(self.channelName, self.rigolScope.GET_SCALE)
+    def get_voltage_scale(self):
+        return self.scope.get_scope_information_float(self.channel_name, self.scope.GET_SCALE)
         
-    def getVoltageOffset(self):
-        return self.rigolScope.getScopeInformationFloat(self.channelName, self.rigolScope.GET_OFFSET)
+    def get_voltage_offset(self):
+        return self.scope.get_scope_information_float(self.channel_name, self.scope.GET_OFFSET)
     
-    def isChannelActive(self):
-        return self.rigolScope.getScopeInformationInteger(self.channelName, self.rigolScope.GET_DISPLAY_ACTIVE) == 1
+    def is_channel_active(self):
+        return self.scope.get_scope_information_integer(self.channel_name, self.scope.GET_DISPLAY_ACTIVE) == 1
 
     def capture(self):
 
-        voltscale = self.getVoltageScale()
-        voltoffset = self.getVoltageOffset()
+        voltscale = self.get_voltage_scale()
+        voltoffset = self.get_voltage_offset()
 
-        self.rigolScope.strategy.getData(self.rigolScope, self.channelName)
-        rawdata = self.rigolScope.read_raw(9000, timeout=14.)
+        self.scope.strategy.get_data(self.scope, self.channel_name)
+        rawdata = self.scope.read_raw(9000, timeout=14.)
         time.sleep(50E-3)
         # remove first 10 bytes
         rawdata = rawdata[10:]
@@ -57,5 +57,5 @@ class RigolScopeChannel:
 
         return ret
 
-    def getData(self):
+    def get_data(self):
         return self.capture()['volt_samples']

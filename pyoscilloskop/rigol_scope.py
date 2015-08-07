@@ -19,9 +19,9 @@
 
 import time
 
-from . import rigolScopeChannel
-from . import timeAxis
-from .rigolDevice import RigolDevice, RigolError, RigolUsageError
+from . import rigol_scope_channel
+from . import time_axis
+from .rigol_device import RigolDevice, RigolError, RigolUsageError
         
 class ScopeStrategy:
     pass
@@ -58,16 +58,16 @@ class RigolScope(RigolDevice):
         except:
             pass
         self.strategy = RigolScope.strategies[self.getModel()[:3]]
-        self.channel1 = rigolScopeChannel.RigolScopeChannel(self, self.CHANNEL1);
-        self.channel2 = rigolScopeChannel.RigolScopeChannel(self, self.CHANNEL2);        
+        self.channel1 = rigol_scope_channel.RigolScopeChannel(self, self.CHANNEL1);
+        self.channel2 = rigol_scope_channel.RigolScopeChannel(self, self.CHANNEL2);        
         
-    def getName(self):
+    def get_name(self):
         return self.dev.idn
 
-    def getModel(self):
-        return self.getName().split(",")[1]
+    def get_model(self):
+        return self.get_name().split(",")[1]
 
-    def getDevice(self):
+    def get_device(self):
         return self.device
         
     def run(self):
@@ -76,37 +76,37 @@ class RigolScope(RigolDevice):
     def stop(self):
         self.write(":STOP")
         
-    def reactivateControlButtons(self):
+    def reactivate_control_buttons(self):
         self.write(":KEY:FORC")
     
-    def getScopeInformation(self, channel, command, readBytes):
+    def get_scope_information(self, channel, command, read_bytes):
         self.write(":" + channel + ":" + command)
-        return self.read(readBytes)
+        return self.read(read_bytes)
         
-    def getScopeInformationFloat(self, channel, command):
-        rawScopeInformation = self.getScopeInformation(channel, command, 30)
-        floatScopeInformation = float(rawScopeInformation)
-        return floatScopeInformation
+    def get_scope_information_float(self, channel, command):
+        raw_scope_information = self.get_scope_information(channel, command, 30)
+        float_scope_information = float(raw_scope_information)
+        return float_scope_information
     
-    def getScopeInformationInteger(self, channel, command):
-        rawScopeInformation = self.getScopeInformation(channel, command, 30)
-        floatScopeInformation = int(rawScopeInformation)
-        return floatScopeInformation
+    def get_scope_information_integer(self, channel, command):
+        raw_scope_information = self.get_scope_information(channel, command, 30)
+        int_scope_information = int(raw_scope_information)
+        return int_scope_information
     
-    def getScopeInformationString(self, channel, command, readBytes):
-        return self.getScopeInformation(channel, command, readBytes)
+    def get_scope_information_string(self, channel, command, readBytes):
+        return self.get_scope_information(channel, command, readBytes)
         
-    def getChannel1(self):
+    def get_channel_1(self):
         return self.channel1
         
-    def getChannel2(self):
+    def get_channel_2(self):
         return self.channel2
         
-    def getTimeScale(self):
-        return self.getScopeInformationFloat(self.GET_TIME_SCALE, self.GET_SCALE)
+    def get_time_scale(self):
+        return self.get_scope_information_float(self.GET_TIME_SCALE, self.GET_SCALE)
         
-    def getTimescaleOffset(self):
-        return self.getScopeInformationFloat(self.GET_TIME_SCALE, self.GET_OFFSET)
+    def get_timescale_offset(self):
+        return self.get_scope_information_float(self.GET_TIME_SCALE, self.GET_OFFSET)
         
-    def getTimeAxis(self):
-        return timeAxis.TimeAxis(self.getTimeScale())
+    def get_time_axis(self):
+        return time_axis.TimeAxis(self.get_time_scale())

@@ -87,20 +87,15 @@ if args.information:
 scope.reactivateControlButtons()
 
 def fill_plot(options):
-    channel1Data = scope.getChannel1().getData();
-    #channel1Data = channel1Data.tolist()
+    channel_1_data = scope.get_channel_1().get_data();
+    channel_2_data = scope.get_channel_2().get_data();
+    time = scope.get_time_axis();
+    time_axis = time.get_time_axis()
     
-    channel2Data = scope.getChannel2().getData();
-    #channel2Data = channel2Data.tolist()
-
-    time = scope.getTimeAxis();
-    
-    timeAxis = time.getTimeAxis()
-    
-    if (not(options.hide_channel_1) and scope.getChannel1().isChannelActive()):
-        plt.plot(timeAxis, channel1Data)
-    if (not(options.hide_channel_2) and scope.getChannel2().isChannelActive()):
-        plt.plot(timeAxis, channel2Data)
+    if (not(options.hide_channel_1) and scope.get_channel_1().is_channel_active()):
+        plt.plot(time_axis, channel_1_data)
+    if (not(options.hide_channel_2) and scope.get_channel_2().is_channel_active()):
+        plt.plot(time_axis, channel_2_data)
     title = "Oscilloskop"
     if options.title != None:
         title = options.title
@@ -108,8 +103,8 @@ def fill_plot(options):
         title = title + " (" + strftime("%Y-%m-%d %H:%M:%S") + ")"
     plt.title(title)
     plt.ylabel("Voltage (V)")
-    plt.xlabel("Time (" + time.getUnit() + ")")
-    plt.xlim(timeAxis[0], timeAxis[599])
+    plt.xlabel("Time (" + time.get_unit() + ")")
+    plt.xlim(time_axis[0], time_axis[599])
 
 if args.save_plot or not args.hide_plot:
     fill_plot(args)
@@ -117,7 +112,7 @@ if args.save_plot or not args.hide_plot:
 if args.restart:
     scope.run()
     
-scope.reactivateControlButtons()
+scope.reactivate_control_buttons()
 
 if args.save_plot != None:
     print("Save plot to: ", args.save_plot)
